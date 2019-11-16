@@ -4,7 +4,7 @@ import requests
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-DISCORD_REDIRECT_URI = 'https://discordapp.com/api/oauth2/authorize?client_id=644830838462218241&redirect_uri=https%3A%2F%2Fhacksoc-film-night.herokuapp.com%2Fverify&response_type=code&scope=identify'
+DISCORD_REDIRECT_URI = 'https://discordapp.com/api/oauth2/authorize?client_id=644830838462218241&redirect_uri=https%3A%2F%2Fhacksoc-film-night.herokuapp.com%2Fdiscord%2Fverify&response_type=code&scope=identify'
 
 API_ENDPOINT = 'https://discordapp.com/api/v6'
 CLIENT_ID = '644830838462218241'
