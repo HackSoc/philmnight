@@ -1,3 +1,4 @@
-django_heroku==0.3.1
 Django==2.2.2
+requests==2.22.0
+django_heroku==0.3.1
 gunicorn
