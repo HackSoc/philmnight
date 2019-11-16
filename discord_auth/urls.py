@@ -5,5 +5,6 @@ app_name = 'discord_auth'
 
 urlpatterns = [
     path('auth/', views.auth),
+    path('verify/', views.verify),
 ]
 
