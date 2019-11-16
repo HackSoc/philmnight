@@ -9,7 +9,7 @@ DISCORD_REDIRECT_URI = 'https://discordapp.com/api/oauth2/authorize?client_id=64
 API_ENDPOINT = 'https://discordapp.com/api/v6'
 CLIENT_ID = '644830838462218241'
 CLIENT_SECRET = 'rIdG5AnCCWu-eap5-Myasd7BFnXHr6L9'
-REDIRECT_URI = 'https://hacksoc-film-night.herokuapp.com/discord/verify'
+REDIRECT_URI = 'https://hacksoc-film-night.herokuapp.com/discord/verify/'
 
 
 def auth(request):
