@@ -32,8 +32,12 @@ def verify(request):
         'Content-Type': 'application/x-www-form-urlencoded'
     }
     r = requests.post('%s/oauth2/token' % API_ENDPOINT, data=data, headers=headers)
-    r.raise_for_status()
+    try:
+        r.raise_for_status()
+        user_authorised = True
+    except requests.exceptions.HTTPError:
+        user_authorised = False
 
-    print(r.json())
+    return render(request, 'discord_auth/verify.html', {'user_authorised': user_authorised})
 
 
