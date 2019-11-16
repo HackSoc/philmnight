@@ -6,4 +6,4 @@ redirect_url = 'https://discordapp.com/api/oauth2/authorize?client_id=6448308384
 
 
 def auth(request):
-    HttpResponseRedirect(redirect_url)
+    return HttpResponseRedirect(redirect_url)
