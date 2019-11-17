@@ -36,7 +36,7 @@ def make_session(token=None, state=None, scope=None):
 def auth(request):
     """Redirect a user to discord's auth page."""
     # Skip auth process if user already logged in
-    if request.user:
+    if request.user.is_authenticated:
         return HttpResponseRedirect('/')
     return HttpResponseRedirect(DISCORD_REDIRECT_URI)
 
@@ -44,7 +44,7 @@ def auth(request):
 def verify(request):
     """Verify a provided code against discord's servers."""
     # Skip verification process if user already logged in
-    if not request.user:
+    if not request.user.is_authenticated:
         code = request.GET.get('code', None)
 
         data = {
