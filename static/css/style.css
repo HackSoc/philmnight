@@ -11,5 +11,6 @@ body {
 #navbar a,
 #navbar p {
   padding: 20px 10px;
+  margin: 0;
   display: inline-block;
 }
