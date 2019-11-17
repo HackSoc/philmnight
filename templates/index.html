@@ -3,15 +3,32 @@
     <head>
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-        <link href="//fonts.googleapis.com/css?family=Sanchez|Inconsolata:400,700" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <div id="navbar">
+        <!--<ul id="navbar">
             {% if user.is_authenticated %}
-                <p>{{ user.username }}</p>
+                <li>{{ user.username }}</li>
             {% else %}
-                <a href="#">Sign in with Slack</a>
-                <a href="/discord/auth">Sign in with Discord</a>
+                <li><a href="#">Sign in with Slack</a></li>
+                <li><a href="/discord/auth">Sign in with Discord</a></li>
+            {% endif %}
+        </ul>-->
+
+        <div id="content">
+            <div id="header-card">
+                <img id="logo" src="{% static 'images/logo.svg' %}">
+                <div id="header-text">
+                    <h1>HackSoc</h1>
+                    <h2>Film Night Portal</h2>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <p>YEET</p>
+            {% else %}
+                <div id="auth-links">
+                    <a href="/discord/auth">Sign in with Discord</a>
+                </div>
             {% endif %}
         </div>
     </body>

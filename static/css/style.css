@@ -1,16 +1,63 @@
 body {
   background-color: #f3f2f4;
-  color: #212121;
+  color: #372d43;
   font-family: 'Inconsolata', monospace;
-}
-
-#navbar {
-  float: right;
-}
-
-#navbar a,
-#navbar p {
-  padding: 20px 10px;
   margin: 0;
-  display: inline-block;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: 'Roboto Slab', monospace;
+  font-weight: 200;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+#content {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#logo {
+  display: block;
+  width: 200px;
+}
+
+#header-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#header-text {
+  margin-left: 20px;
+}
+
+#auth-links {
+  margin: 50px;
+}
+
+#auth-links a {
+  text-decoration: none;
+  display: block;
+  color: inherit;
+  padding: 20px;
+  border-radius: 50px;
+  transition: all linear 0.3s;
+}
+
+#auth-links a:hover {
+  background-color: #372d43;
+  color: #f3f2f4;
 }
