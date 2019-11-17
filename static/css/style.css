@@ -3,6 +3,7 @@ body {
   color: #372d43;
   font-family: 'Inconsolata', monospace;
   margin: 0;
+  overflow: hidden;
 }
 
 h1,
