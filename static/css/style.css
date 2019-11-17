@@ -61,3 +61,14 @@ h1 {
   background-color: #372d43;
   color: #f3f2f4;
 }
+
+@media only screen and (max-width: 500px) {
+  #header-card {
+    flex-direction: column;
+  }
+
+  #header-text {
+    text-align: center;
+    margin: 0;
+  }
+}
