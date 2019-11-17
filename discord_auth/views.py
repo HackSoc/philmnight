@@ -53,22 +53,28 @@ def verify(request):
     except requests.exceptions.HTTPError:
         user_authorised = False
 
+
     if user_authorised:
         discord = make_session(token=r.json())
 
         user_data = discord.get(API_ENDPOINT + '/users/@me').json()
-        
-        try:
-            user = User.objects.create_user(user_data['username']+'#'+user_data['discriminator'], password=''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)]))
-            user.email = user_data['id']
-            user.save()
-        except IntegrityError:
-            user = User.objects.get(email = user_data['id'])
-        login(request, user)
+        user_guilds = discord.get(API_ENDPOINT + '/users/@me/guilds').json()
 
+    compsci_discord = False
+    for guild in user_guilds:
+        if guild['id'] == '615499539218169866':
+            compsci_discord = True
 
+    
+        if compsci_discord:
+            try:
+                user = User.objects.create_user(user_data['username']+'#'+user_data['discriminator'], password=''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)]))
+                user.email = user_data['id']
+                user.save()
+            except IntegrityError:
+                user = User.objects.get(email = user_data['id'])
+            login(request, user)
 
-        print(discord.get(API_ENDPOINT + '/users/@me/guilds').json())
 
     return HttpResponseRedirect('/')
 
