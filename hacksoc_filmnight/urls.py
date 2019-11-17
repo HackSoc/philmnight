@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from film_management import views as fm_views
 
 urlpatterns = [
     path('', views.index),
     path('admin/', admin.site.urls),
     path('discord/', include('discord_auth.urls')),
+    path('dashboard/', fm_views.dashboard)
 ]
