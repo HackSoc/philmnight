@@ -7,13 +7,11 @@
     </head>
     <body>
         <div id="navbar">
-            {{ user }}
-            {{ request.user }}
             {% if user.is_authenticated %}
+                <p>{{ user.username }}</p>
+            {% else %}
                 <a href="#">Sign in with Slack</a>
                 <a href="/discord/auth">Sign in with Discord</a>
-            {% else %}
-                <p>{{ user.username }}</p>
             {% endif %}
         </div>
     </body>
