@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'film_management.apps.FilmManagementConfig',
     'discord_auth.apps.DiscordAuthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -124,6 +125,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+LOGIN_URL = '/discord/auth'
 
 if 'DYNO' in os.environ:
     django_heroku.settings(locals())
