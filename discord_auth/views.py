@@ -7,6 +7,7 @@ from requests_oauthlib import OAuth2Session
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.contrib.auth import login
 from django.db import IntegrityError
 
 DISCORD_REDIRECT_URI = 'https://discordapp.com/api/oauth2/authorize?client_id=644830838462218241&redirect_uri=https%3A%2F%2Fhacksoc-film-night.herokuapp.com%2Fdiscord%2Fverify&response_type=code&scope=identify%20guilds'
@@ -63,12 +64,12 @@ def verify(request):
             user.save()
         except IntegrityError:
             user = User.objects.get(email = user_data['id'])
-
+        login(request, user)
 
 
 
         print(discord.get(API_ENDPOINT + '/users/@me/guilds').json())
 
-    return render(request, 'discord_auth/verify.html', {'user_authorised': user_authorised, 'username': user.username, 'uid': user.email})
+    return HttpResponseRedirect('/')
 
 
