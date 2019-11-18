@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 
 def is_filmweek():
-    return date.now().isocalendar()[1] % 2 == 0
+    return date.today().isocalendar()[1] % 2 == 0
 
 
 @login_required
