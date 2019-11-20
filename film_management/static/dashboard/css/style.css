@@ -16,6 +16,10 @@ h6 {
   font-weight: 200;
 }
 
+h1 {
+  margin-bottom: 10px;
+}
+
 #film-input {
   background-color: #e8dafa;
   padding: 10px 20px;
@@ -54,4 +58,12 @@ h6 {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+#submit-form {
+  margin-top: 10px;
+}
+
+#response-message {
+  transition: opacity linear 0.3s;
 }

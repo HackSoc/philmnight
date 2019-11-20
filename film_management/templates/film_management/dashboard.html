@@ -12,11 +12,34 @@
                 <h1>Voting is open</h1>
             {% else %}
                 <h1>Submissions are open</h1>
-                <form method="POST" action="/film_management/submit_film/">
+                <form method="POST" action="/film_management/submit_film/" id="submit-form">
                     {% csrf_token %}
-                    <input type="text" id="film-input" name="film_name">
+                    <input type="text" id="film-input" name="film_name" autocomplete="off">
                     <input type="submit" id="film-submit">
                 </form>
+                <p id="response-message" style="opacity: 0">.</p>
+                <script>
+                document.addEventListener('submit', function (e) {
+                    e.preventDefault()
+                    const form = e.target
+
+                    fetch(form.action, {
+                        method: form.method,
+                        body: new FormData(form)
+                    }).then(function (response) {
+                        response.json().then(function (data) {
+                            var responseMessage = document.getElementById('response-message')
+                            if (!data['success']) {
+                                responseMessage.innerHTML = 'Film already submitted'
+                                responseMessage.style.opacity = '1'
+                            } else {
+                                responseMessage.innerHTML = 'Successfully added film'
+                                responseMessage.style.opacity = '1'
+                            }
+                        })
+                    })
+                })
+                </script>
             {% endif %}
         </div>
     </body>

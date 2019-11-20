@@ -1,8 +1,7 @@
 from datetime import date
 
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
 
@@ -22,12 +21,13 @@ def dashboard(request):
 def submit_film(request):
     new_film = request.POST.get('film_name', '')
 
+    context = {'success': True}
+
     if new_film:
         try:
             Film.objects.create(name=new_film)
         except IntegrityError:
-            pass
-        # Use messages framework here
+            context['success'] = False
             
 
-    return HttpResponseRedirect('/dashboard/')
+    return JsonResponse(context)
