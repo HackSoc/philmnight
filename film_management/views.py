@@ -12,12 +12,12 @@ def is_filmweek():
     return date.today().isocalendar()[1] % 2 == 0
 
 
-# @login_required
+@login_required
 def dashboard(request):
     return render(request, 'film_management/dashboard.html', {'is_filmweek': is_filmweek()})
 
 
-# @login_required
+@login_required
 def submit_film(request):
     new_film = request.POST.get('film_name', '')
 
