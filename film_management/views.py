@@ -30,4 +30,4 @@ def submit_film(request):
         # Use messages framework here
             
 
-    return HttpResponseRedirect(request.path)
+    return HttpResponseRedirect('/dashboard/')
