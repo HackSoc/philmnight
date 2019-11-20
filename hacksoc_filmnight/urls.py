@@ -22,5 +22,6 @@ urlpatterns = [
     path('', views.index),
     path('admin/', admin.site.urls),
     path('discord/', include('discord_auth.urls')),
+    path('film_management/', include('film_management.urls')),
     path('dashboard/', fm_views.dashboard)
 ]

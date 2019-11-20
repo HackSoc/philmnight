@@ -1,8 +1,23 @@
 <!DOCTYPE HTML>
 <html>
     <head>
+        {% load static %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">        
+        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style.css' %}">
+        <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <p>Film is this week: {{ is_filmweek }}</p>
+        <div id="content">
+            {% if is_filmweek %}
+                <h1>Voting is open</h1>
+            {% else %}
+                <h1>Submissions are open</h1>
+                <form method="POST" action="/film_management/submit_film/">
+                    {% csrf_token %}
+                    <input type="text" id="film-input" name="film_name">
+                    <input type="submit" id="film-submit">
+                </form>
+            {% endif %}
+        </div>
     </body>
 </html>
