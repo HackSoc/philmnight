@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.utils import IntegrityError
 
 
 class Film(models.Model):
@@ -13,3 +14,14 @@ class Film(models.Model):
         self.film_id = self.name.replace(' ', '').lower()
 
         super(Film, self).save(*args, **kwargs)
+
+
+class FilmConfig(models.Model):
+    shortlist_length = models.IntegerField(default=8)
+
+    def save(self, *args, **kwargs):
+        try:
+            self.pk = 1
+            super(Film, self).save(*args, **kwargs)
+        except IntegrityError:
+            raise IntegrityError('Only one instance of FilmConfig may exist in the database')

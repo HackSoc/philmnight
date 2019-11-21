@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        {% load static %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">        
+        <link rel="stylesheet" type="text/css" href="{% static 'films/css/style.css' %}">
+        <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div id="content">
+            <h1>Films currently on the watchlist</h1>
+            <table>
+                <tr>
+                    <th>Film Name</th>
+                    <th>In current vote</th>
+                    <th id="date-submitted">Date submitted</th>
+                </tr>
+                {% for film in films %}
+                <tr>
+                    <td>{{ film.name }}</td>
+                    <td>{% if film.in_current_vote %}✔{% endif %}</td>
+                    <td>{{ film.date_submitted }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </body>
+</html>
+

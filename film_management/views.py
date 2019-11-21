@@ -31,3 +31,7 @@ def submit_film(request):
             
 
     return JsonResponse(context)
+
+
+def films(request):
+    return render(request, 'film_management/films.html', {'films': Film.objects.all()})
