@@ -8,6 +8,8 @@ class Film(models.Model):
     vote_count = models.IntegerField(default=0)
     in_current_vote = models.BooleanField(default=False)
 
+    poster_path = models.CharField(default='', max_length=100)
+
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -25,3 +27,4 @@ class FilmConfig(models.Model):
             super(Film, self).save(*args, **kwargs)
         except IntegrityError:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
+

@@ -11,12 +11,14 @@
             <h1>Films currently on the watchlist</h1>
             <table>
                 <tr>
+                    <th></th>
                     <th>Film Name</th>
-                    <th>In current vote</th>
+                    <th id="in-current-vote">In current vote</th>
                     <th id="date-submitted">Date submitted</th>
                 </tr>
                 {% for film in films %}
                 <tr>
+                    <td><img src="http://image.tmdb.org/t/p/original{{ film.poster_path }}">
                     <td>{{ film.name }}</td>
                     <td>{% if film.in_current_vote %}✔{% endif %}</td>
                     <td>{{ film.date_submitted }}</td>
