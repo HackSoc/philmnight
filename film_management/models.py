@@ -1,5 +1,10 @@
+import requests
+
 from django.db import models
 from django.db.utils import IntegrityError
+
+TMDB_ENDPOINT = '***REMOVED***'
+TMDB_KEY = '***REMOVED***'
 
 
 class Film(models.Model):
@@ -14,6 +19,11 @@ class Film(models.Model):
 
     def save(self, *args, **kwargs):
         self.film_id = self.name.replace(' ', '').lower()
+        try:
+            film_info = requests.get(TMDB_ENDPOINT + 'search/movie?query=' + self.name + '&api_key=' + TMDB_KEY).json()['results'][0]
+            self.poster_path = film_info['poster_path']
+        except IndexError:
+            self.poster_path = ''
 
         super(Film, self).save(*args, **kwargs)
 

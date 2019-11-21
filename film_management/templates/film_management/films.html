@@ -18,7 +18,7 @@
                 </tr>
                 {% for film in films %}
                 <tr>
-                    <td><img class="film-image" src="http://image.tmdb.org/t/p/original{{ film.poster_path }}">
+                    <td><img class="film-image" src="{% if film.poster_path != '' %}http://image.tmdb.org/t/p/original{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
                     <td>{{ film.name }}</td>
                     <td>{% if film.in_current_vote %}✔{% endif %}</td>
                     <td>{{ film.date_submitted }}</td>
