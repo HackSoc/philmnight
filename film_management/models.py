@@ -12,6 +12,7 @@ class Film(models.Model):
     film_id = models.CharField(max_length=70, unique=True, blank=True)
     vote_count = models.IntegerField(default=0)
     in_current_vote = models.BooleanField(default=False)
+    watched = models.BooleanField(default=False)
 
     poster_path = models.CharField(default='', max_length=100)
 
@@ -31,12 +32,13 @@ class Film(models.Model):
 
 
 class FilmConfig(models.Model):
+    shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
+    last_shortlist = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         try:
-            self.pk = 1
-            super(Film, self).save(*args, **kwargs)
+            self.id = 1
+            super(FilmConfig, self).save(*args, **kwargs)
         except IntegrityError:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
-

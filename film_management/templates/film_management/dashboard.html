@@ -2,14 +2,26 @@
 <html>
     <head>
         {% load static %}
-        <meta name="viewport" content="width=device-width, initial-scale=1">        
-        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style.css' %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% if is_filmweek %}
+            <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_voting.css' %}">
+        {% else %}
+            <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submitting.css' %}">
+        {% endif %}
         <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
     </head>
     <body>
         <div id="content">
             {% if is_filmweek %}
                 <h1>Voting is open</h1>
+                    <div id="films">
+                        {% for film in shortlisted_films %}
+                            <div class="film">
+                                <p>{{ film.name }}</p>
+                                <img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
+                            </div>
+                        {% endfor %}
+                    </div>
             {% else %}
                 <h1>Submissions are open</h1>
                 <form method="POST" action="/film_management/submit_film/" id="submit-form">
