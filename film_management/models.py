@@ -15,7 +15,7 @@ class Film(models.Model):
 
     poster_path = models.CharField(default='', max_length=100)
 
-    submitting_user = models.TextField(blank=True, null=True)
+    submitting_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
