@@ -2,10 +2,10 @@ import requests
 
 from django.db import models
 from django.db.utils import IntegrityError
+from django.contrib.auth.models import User
 
 TMDB_ENDPOINT = '***REMOVED***'
 TMDB_KEY = '***REMOVED***'
-
 
 class Film(models.Model):
     name = models.CharField(max_length=70, blank=False)
@@ -14,6 +14,8 @@ class Film(models.Model):
     in_current_vote = models.BooleanField(default=False)
 
     poster_path = models.CharField(default='', max_length=100)
+
+    submitting_user = models.TextField(blank=True, null=True)
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
