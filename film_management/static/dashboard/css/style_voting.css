@@ -1,3 +1,7 @@
+h1 {
+  text-align: center;
+}
+
 body {
   background-color: #f3f2f4;
   color: #372d43;
@@ -33,15 +37,6 @@ table {
   width: 100px;
 }
 
-#content {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
 #films {
   display: flex;
   margin: 5px;
@@ -58,7 +53,7 @@ table {
 .film {
   width: 130px;
   padding: 20px;
-  margin: 10px;
+  margin: auto;
 }
 
 #films-link {
