@@ -1,5 +1,6 @@
 import datetime
 import random
+import ast
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -40,7 +41,11 @@ def dashboard(request):
 
             film_config.save()
 
-        return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all()})
+        current_votes = request.user.profile.current_votes.split(',')
+        if current_votes == ['']:
+            current_votes = []
+
+        return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all(), 'current_votes': current_votes})
 
     return render(request, 'film_management/dashboard.html', {'is_filmweek': False})
 
@@ -72,5 +77,46 @@ def submit_film(request):
     return JsonResponse(context)
 
 
+@login_required
+def submit_votes(request):
+    user = request.user
+
+    # Clear votes from previous weeks
+    if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
+        user.profile.current_votes = ''
+        user.save()
+
+    success = True
+    try:
+        submitted_films = ast.literal_eval(request.body.decode('utf-8'))
+    except ValueError:
+        success = False
+
+    if success:
+        old_votes = user.profile.current_votes.split(',')
+
+        for film in submitted_films:
+            if film not in old_votes and film != '':
+                film = Film.objects.get(film_id=film)
+                film.vote_count += 1
+                film.save()
+        print(old_votes)
+
+        for film in old_votes:
+            print(film)
+            if film not in submitted_films and film != '':
+                print(film)
+                film = Film.objects.get(film_id=film)
+                film.vote_count -= 1
+                film.save()
+
+        user.profile.last_vote = datetime.datetime.now()
+        user.profile.current_votes = ','.join(submitted_films)
+        user.save()
+
+    return JsonResponse({'success': success})
+
+
+@login_required
 def films(request):
     return render(request, 'film_management/films.html', {'films': Film.objects.all()})

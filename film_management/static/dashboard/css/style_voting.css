@@ -56,5 +56,7 @@ table {
 }
 
 .film {
+  width: 130px;
   padding: 20px;
+  margin: 10px;
 }

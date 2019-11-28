@@ -3,9 +3,12 @@ import requests
 from django.db import models
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 TMDB_ENDPOINT = '***REMOVED***'
 TMDB_KEY = '***REMOVED***'
+
 
 class Film(models.Model):
     name = models.CharField(max_length=70, blank=False)
@@ -42,3 +45,22 @@ class FilmConfig(models.Model):
             super(FilmConfig, self).save(*args, **kwargs)
         except IntegrityError:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    current_votes = models.TextField(blank=True, default='')
+    last_vote = models.DateTimeField()
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.profile.save()
+    except AttributeError:
+        Profile.objects.create(user=instance)
