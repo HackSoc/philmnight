@@ -6,7 +6,7 @@
         {% if is_filmweek %}
             <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_voting.css' %}">
         {% else %}
-            <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submitting.css' %}">
+            <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submissions.css' %}">
         {% endif %}
         <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
     </head>
@@ -16,12 +16,23 @@
                 <h1>Voting is open</h1>
                     <div id="films">
                         {% for film in shortlisted_films %}
-                            <div class="film">
+                            <div class="film" onclick="updateFilm(this)">
                                 <p>{{ film.name }}</p>
                                 <img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
                             </div>
                         {% endfor %}
                     </div>
+                    <script>
+                    function updateFilm (element) {
+                        var filmBackground = element.style.backgroundColor
+
+                        if (filmBackground === '') {
+                            element.style.backgroundColor = '#e8dafa'
+                        } else {
+                            element.style.backgroundColor = ''
+                        }
+                    }
+                    </script>
             {% else %}
                 <h1>Submissions are open</h1>
                 <form method="POST" action="/film_management/submit_film/" id="submit-form">
@@ -42,7 +53,11 @@
                         response.json().then(function (data) {
                             var responseMessage = document.getElementById('response-message')
                             if (!data['success']) {
-                                responseMessage.innerHTML = 'Film already submitted'
+                                if (data['error'] === 1) {
+                                    responseMessage.innerHTML = 'Film already submitted'
+                                } else if (data['error'] === 2) {
+                                    responseMessage.innerHTML = 'You are doing that too fast'
+                                }
                                 responseMessage.style.opacity = '1'
                             } else {
                                 responseMessage.innerHTML = 'Successfully added film'

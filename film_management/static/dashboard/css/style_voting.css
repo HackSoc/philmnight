@@ -3,7 +3,7 @@ body {
   color: #372d43;
   font-family: 'Inconsolata', monospace;
   overflow-x: hidden;
-  margin: 20px;
+  margin: 0;
 }
 
 h1,
@@ -31,4 +31,30 @@ table {
 
 .film-image {
   width: 100px;
+}
+
+#content {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#films {
+  display: flex;
+  margin: 5px;
+  justify-content: center;
+  flex-wrap: wrap;
+  text-align: center;
+  cursor: pointer;
+}
+
+.film:hover {
+  background-color: #e8dafa;
+}
+
+.film {
+  padding: 20px;
 }

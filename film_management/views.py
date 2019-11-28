@@ -26,18 +26,19 @@ def dashboard(request):
         film_config = get_config()
         
         if (datetime.datetime.now() - film_config.last_shortlist).days > 7:
-            available_films = Film.objects.filter(watched=False) 
+            available_films = Film.objects.filter(watched=False)
             film_config.shortlist.clear()
+            film_config.last_shortlist = datetime.datetime.now()
 
             for i in range(film_config.shortlist_length):
                 chosen_film = random.choice(available_films)
 
                 film_config.shortlist.add(chosen_film)
-                available_films.exclude(id=chosen_film.id)
+                available_films = available_films.exclude(id=chosen_film.id)
 
             film_config.save()
 
-        return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all()})
+        return render(request, 'film_management/dashboard.html', {'is_filmweek': False, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all()})
 
     return render(request, 'film_management/dashboard.html', {'is_filmweek': False})
 
@@ -46,13 +47,23 @@ def dashboard(request):
 def submit_film(request):
     new_film = request.POST.get('film_name', '')
 
+    print(Film.objects.filter(submitting_user=request.user).order_by('-date_submitted'))
+
+    try:
+        last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
+        if (datetime.datetime.now()-last_user_film.date_submitted).seconds < 30:
+            return JsonResponse({'success': False, 'error': 2})
+    except IndexError:
+        pass
+
     context = {'success': True}
 
     if new_film:
         try:
-            Film.objects.create(name=new_film)
+            Film.objects.create(name=new_film, submitting_user=request.user)
         except IntegrityError:
             context['success'] = False
+            context['error'] = 1
             
 
     return JsonResponse(context)

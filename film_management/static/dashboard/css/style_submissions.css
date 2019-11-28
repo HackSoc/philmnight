@@ -20,6 +20,37 @@ h1 {
   margin-bottom: 10px;
 }
 
+#film-input {
+  background-color: #e8dafa;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  box-sizing: border-box;
+  transition: all linear 0.3s;
+}
+
+#film-input:focus {
+  outline: none;
+  background-color: transparent;
+  box-shadow: 0 0 0 2px #372d43;
+}
+
+#film-submit {
+  color: inherit;
+  background-color: transparent;
+  font-family: inherit;
+  padding: 13px 30px;
+  border: none;
+  cursor: pointer;
+  transition: all linear 0.3s;
+  border-radius: 50px;
+}
+
+#film-submit:hover {
+  background-color: #372d43;
+  color: #f3f2f4;
+}
+
 #content {
   width: 100vw;
   height: 100vh;
@@ -29,6 +60,12 @@ h1 {
   flex-direction: column;
 }
 
-#films {
-  display: flex;
+#submit-form {
+  margin-top: 10px;
 }
+
+#response-message {
+  transition: opacity linear 0.3s;
+
+}
+
