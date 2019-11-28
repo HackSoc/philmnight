@@ -40,7 +40,7 @@ def dashboard(request):
 
             film_config.save()
 
-        return render(request, 'film_management/dashboard.html', {'is_filmweek': False, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all()})
+        return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all()})
 
     return render(request, 'film_management/dashboard.html', {'is_filmweek': False})
 
