@@ -26,6 +26,10 @@ def get_config():
 @login_required
 def dashboard(request):
     if is_filmweek():
+        if datetime.datetime.now().isocalendar()[2] == 7:
+            top_film = Film.objects.order_by('-vote_count')[0]
+            return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'top_film': top_film})
+
         film_config = get_config()
         
         if (datetime.datetime.now() - film_config.last_shortlist).days > 7:
