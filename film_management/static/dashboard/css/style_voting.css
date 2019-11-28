@@ -46,10 +46,6 @@ table {
   cursor: pointer;
 }
 
-.film:hover {
-  background-color: #e8dafa;
-}
-
 .film {
   width: 130px;
   padding: 20px;
@@ -57,5 +53,7 @@ table {
 }
 
 #films-link {
-  margin-top: 20px;
+  margin: 20px;
+  text-align: center;
+  display: block;
 }
