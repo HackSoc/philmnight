@@ -1,4 +1,5 @@
 import requests
+import datetime
 
 from django.db import models
 from django.db.utils import IntegrityError
@@ -50,7 +51,7 @@ class FilmConfig(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     current_votes = models.TextField(blank=True, default='')
-    last_vote = models.DateTimeField()
+    last_vote = models.DateTimeField(default=datetime.datetime.min)
 
 
 @receiver(post_save, sender=User)
