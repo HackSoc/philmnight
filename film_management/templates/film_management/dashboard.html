@@ -56,6 +56,9 @@
                             if (!data['success']) {
                                 if (data['error'] === 1) {
                                     responseMessage.innerHTML = 'Film already submitted'
+                                    setTimeout(function () {
+                                        responseMessage.style.opacity = '0'
+                                    }, 1500)
                                 } else if (data['error'] === 2) {
                                     timeRemaining = data['time']
                                     responseMessage.innerHTML = 'You are doing that too fast. Try again in ' + timeRemaining + ' seconds'
@@ -73,6 +76,9 @@
                             } else {
                                 responseMessage.innerHTML = 'Successfully added film'
                                 responseMessage.style.opacity = '1'
+                                setTimeout(function () {
+                                   responseMessage.style.opacity = '0'
+                                }, 1500)
                             }
                         })
                     })
