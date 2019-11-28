@@ -8,6 +8,8 @@ from django.db.utils import IntegrityError
 
 from .models import Film, FilmConfig
 
+FILM_TIMEOUT = 10
+
 
 def is_filmweek():
     return datetime.date.today().isocalendar()[1] % 2 == 0
@@ -51,8 +53,9 @@ def submit_film(request):
 
     try:
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
-        if (datetime.datetime.now()-last_user_film.date_submitted).seconds < 30:
-            return JsonResponse({'success': False, 'error': 2})
+        last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
+        if last_submit_delta < FILM_TIMEOUT:
+            return JsonResponse({'success': False, 'error': 2, 'time': FILM_TIMEOUT-last_submit_delta})
     except IndexError:
         pass
 

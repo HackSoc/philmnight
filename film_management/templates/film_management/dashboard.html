@@ -42,6 +42,7 @@
                 </form>
                 <p id="response-message" style="opacity: 0">.</p>
                 <script>
+                var timeRemaining = 0
                 document.addEventListener('submit', function (e) {
                     e.preventDefault()
                     const form = e.target
@@ -56,7 +57,17 @@
                                 if (data['error'] === 1) {
                                     responseMessage.innerHTML = 'Film already submitted'
                                 } else if (data['error'] === 2) {
-                                    responseMessage.innerHTML = 'You are doing that too fast'
+                                    timeRemaining = data['time']
+                                    responseMessage.innerHTML = 'You are doing that too fast. Try again in ' + timeRemaining + ' seconds'
+                                    var timeDecrementInterval = setInterval(function () {
+                                        timeRemaining -= 1
+                                        if (timeRemaining < 0) {
+                                            responseMessage.style.opacity = '0'
+                                            clearInterval(timeDecrementInterval)
+                                        } else {
+                                            responseMessage.innerHTML = 'You are doing that too fast. Try again in ' + timeRemaining + ' seconds'   
+                                        }
+                                    }, 1000)
                                 }
                                 responseMessage.style.opacity = '1'
                             } else {
