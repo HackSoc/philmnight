@@ -54,8 +54,6 @@ def dashboard(request):
 def submit_film(request):
     new_film = request.POST.get('film_name', '')
 
-    print(Film.objects.filter(submitting_user=request.user).order_by('-date_submitted'))
-
     try:
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
@@ -100,12 +98,9 @@ def submit_votes(request):
                 film = Film.objects.get(film_id=film)
                 film.vote_count += 1
                 film.save()
-        print(old_votes)
 
         for film in old_votes:
-            print(film)
             if film not in submitted_films and film != '':
-                print(film)
                 film = Film.objects.get(film_id=film)
                 film.vote_count -= 1
                 film.save()
