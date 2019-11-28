@@ -19,7 +19,7 @@ def get_config():
     try:
         return FilmConfig.objects.all()[0]
     except IndexError:
-        FilmConfig.objects.create(last_shortlist=datetime.datetime(1,1,1))
+        return FilmConfig.objects.create(last_shortlist=datetime.datetime(1,1,1))
 
 
 @login_required
