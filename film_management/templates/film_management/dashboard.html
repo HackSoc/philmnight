@@ -46,6 +46,7 @@
                         element.style.backgroundColor = '#e8dafa'
                     }
                     </script>
+                    <a id="films-link" href="/films/">See all submitted films</a>
             {% else %}
                 <h1>Submissions are open</h1>
                 <form method="POST" action="/film_management/submit_film/" id="submit-form">
@@ -97,6 +98,7 @@
                     })
                 })
                 </script>
+                <a id="films-link" href="/films/">See all submitted films</a>
             {% endif %}
         </div>
     </body>
