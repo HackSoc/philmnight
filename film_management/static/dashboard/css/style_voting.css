@@ -57,3 +57,12 @@ table {
   text-align: center;
   display: block;
 }
+
+#chosen-film {
+  text-align: center;
+  font-size: 1.3em;
+}
+
+#chosen-film img {
+  width: 150px;
+}
