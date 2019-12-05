@@ -13,7 +13,8 @@ FILM_TIMEOUT = 10
 
 
 def is_filmweek():
-    return datetime.date.today().isocalendar()[1] % 2 == 0
+    iso_date = datetime.date.today().isocalendar()
+    return iso_date[1] % 2 == 0 and iso_date[2] <= 5
 
 
 def get_config():

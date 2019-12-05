@@ -40,6 +40,10 @@ class FilmConfig(models.Model):
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
 
+    def clean(self, *args, **kwargs):
+        if self.shortlist.count() > self.shortlist_length:
+            raise ValueError('Shortlist length exceeds max')
+
     def save(self, *args, **kwargs):
         try:
             self.id = 1
