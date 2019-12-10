@@ -1,5 +1,7 @@
-import requests
+"""Models relating to film management."""
+
 import datetime
+import requests
 
 from django.db import models
 from django.db.utils import IntegrityError
@@ -7,11 +9,11 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-TMDB_ENDPOINT = '***REMOVED***'
-TMDB_KEY = '***REMOVED***'
-
+from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
 class Film(models.Model):
+    """Stores information regarding an individual film."""
+
     name = models.CharField(max_length=70, blank=False)
     film_id = models.CharField(max_length=70, unique=True, blank=True)
     vote_count = models.IntegerField(default=0)
@@ -36,6 +38,8 @@ class Film(models.Model):
 
 
 class FilmConfig(models.Model):
+    """Dynamic settings regarding how the shortlist works."""
+
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
@@ -53,6 +57,8 @@ class FilmConfig(models.Model):
 
 
 class Profile(models.Model):
+    """Model to extend the user model."""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     current_votes = models.TextField(blank=True, default='')
     last_vote = models.DateTimeField(default=datetime.datetime.min)

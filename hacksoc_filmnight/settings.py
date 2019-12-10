@@ -128,6 +128,9 @@ STATICFILES_DIRS = [
 
 LOGIN_URL = '/discord/auth'
 
+TMDB_ENDPOINT = '***REMOVED***'
+TMDB_KEY = '***REMOVED***'
+
 if 'DYNO' in os.environ:
     django_heroku.settings(locals())
     SECURE_SSL_REDIRECT = True
