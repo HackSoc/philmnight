@@ -51,9 +51,11 @@ h1 {
 
 #auth-links a {
   text-decoration: none;
+  text-align: center;
   display: block;
   color: inherit;
   padding: 20px;
+  margin: 10px;
   border-radius: 50px;
   transition: all linear 0.3s;
 }

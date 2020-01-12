@@ -11,6 +11,7 @@ from django.dispatch import receiver
 
 from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
+
 class Film(models.Model):
     """Stores information regarding an individual film."""
 
@@ -22,14 +23,25 @@ class Film(models.Model):
 
     poster_path = models.CharField(default='', max_length=100)
 
-    submitting_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    submitting_user = models.ForeignKey(User, blank=True, null=True,
+                                        on_delete=models.CASCADE)
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
+    # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
+        """
+        Override save argument of film model.
+
+        Override save argument of film model to populate film_id
+        field and search TMDB for film data and appropriate poster.
+        """
+        # pylint: disable=no-member
         self.film_id = self.name.replace(' ', '').lower()
         try:
-            film_info = requests.get(TMDB_ENDPOINT + 'search/movie?query=' + self.name + '&api_key=' + TMDB_KEY).json()['results'][0]
+            request_path = (TMDB_ENDPOINT + 'search/movie?query=' + self.name +
+                            '&api_key=' + TMDB_KEY)
+            film_info = requests.get(request_path).json()['results'][0]
             self.poster_path = film_info['poster_path']
         except IndexError:
             self.poster_path = ''
@@ -44,10 +56,13 @@ class FilmConfig(models.Model):
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
 
+    # pylint: disable=unused-argument
     def clean(self, *args, **kwargs):
+        """Override clean function so shortlist can't be overpopulated."""
         if self.shortlist.count() > self.shortlist_length:
             raise ValueError('Shortlist length exceeds max')
 
+    # pylint: disable=unused-argument
     def save(self, *args, **kwargs):
         try:
             self.id = 1

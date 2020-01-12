@@ -67,7 +67,7 @@ def verify(request):
 
         user_data = discord.get(API_ENDPOINT+'/users/@me').json()
         user_guilds = discord.get(API_ENDPOINT+'/users/@me/guilds').json()
-
+        print(user_data)
         compsci_discord = False
         for guild in user_guilds:
             if guild['id'] == COMPSCI_YORK_ID:
