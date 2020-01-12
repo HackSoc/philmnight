@@ -17,7 +17,7 @@
             </div>
             <div id="auth-links">
                 {% if user.is_authenticated %}
-                    <a href="/dashboard">Welcome back {{ user.username }}</a>
+                    <a href="/dashboard">Welcome back {{ user.email }}</a>
                 {% else %}
                     <a href="/discord/auth">Sign in with Discord</a>
                     <a href="/auth_email">Sign in with a UoY email address.</a>

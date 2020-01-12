@@ -67,7 +67,7 @@ def verify(request):
 
         user_data = discord.get(API_ENDPOINT+'/users/@me').json()
         user_guilds = discord.get(API_ENDPOINT+'/users/@me/guilds').json()
-        print(user_data)
+
         compsci_discord = False
         for guild in user_guilds:
             if guild['id'] == COMPSCI_YORK_ID:
@@ -80,12 +80,13 @@ def verify(request):
                     password = ''.join([random.choice(
                         string.ascii_letters+string.digits) for n in range(32)]
                                       )
-                    user = User.objects.create_user(username,
-                                                    password=password)
+                    user = User.objects.create_user(user_data['id'],
+                                                    password=password,
+                                                    email=username)
                     user.email = user_data['id']
                     user.save()
                 except IntegrityError:
-                    user = User.objects.get(email=user_data['id'])
+                    user = User.objects.get(username=user_data['id'])
                 login(request, user)
 
     return HttpResponseRedirect('/')
