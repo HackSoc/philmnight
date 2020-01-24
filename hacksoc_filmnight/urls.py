@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . import views
+
 from film_management import views as fm_views
+from . import views
 
 urlpatterns = [
     path('', views.index),
+    path('', include('social_django.urls', namespace='social')),
     path('admin/', admin.site.urls),
     path('discord/', include('discord_auth.urls')),
     path('film_management/', include('film_management.urls')),

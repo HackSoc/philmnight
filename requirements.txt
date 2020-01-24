@@ -3,3 +3,4 @@ requests==2.22.0
 django_heroku==0.3.1
 gunicorn
 requests_oauthlib
+social-auth-app-django

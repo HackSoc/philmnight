@@ -22,7 +22,8 @@
                     <a href="/dashboard">Welcome back {{ user.email }}</a>
                 {% else %}
                     <a href="/discord/auth">Sign in with Discord</a>
-                    <div class="g-signin2" data-onsuccess="onSignIn"></div>                    
+                    <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">
+        Login</a>
                     <a href="/auth_email">Sign in with a UoY email address.</a>
                 {% endif %}
             </div>
