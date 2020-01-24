@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">        
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
         <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>        
+        <meta name="google-signin-client_id" content="***REMOVED***">
     </head>
     <body>
         <div id="content">
@@ -20,6 +22,7 @@
                     <a href="/dashboard">Welcome back {{ user.email }}</a>
                 {% else %}
                     <a href="/discord/auth">Sign in with Discord</a>
+                    <div class="g-signin2" data-onsuccess="onSignIn"></div>                    
                     <a href="/auth_email">Sign in with a UoY email address.</a>
                 {% endif %}
             </div>
