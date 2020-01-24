@@ -38,6 +38,10 @@ def dashboard(request):
             film_config.shortlist.clear()
             film_config.last_shortlist = datetime.datetime.now()
 
+            for film in available_films:
+                film.vote_count = 0
+                film.save()
+
             for i in range(film_config.shortlist_length):
                 chosen_film = random.choice(available_films)
 
@@ -103,7 +107,7 @@ def submit_votes(request):
         for film in submitted_films:
             if film not in old_votes and film != '':
                 film = Film.objects.get(film_id=film)
-                if film not in config.shortlist:
+                if film not in config.shortlist.all():
                     return JsonResponse({'success': False})
                 film.vote_count += 1
                 film.save()
@@ -111,7 +115,7 @@ def submit_votes(request):
         for film in old_votes:
             if film not in submitted_films and film != '':
                 film = Film.objects.get(film_id=film)
-                if film not in config.shortlist:
+                if film not in config.shortlist.all():
                     return JsonResponse({'success': False})
                 film.vote_count -= 1
                 film.save()
