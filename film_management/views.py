@@ -4,7 +4,8 @@ import ast
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+
 from django.db.utils import IntegrityError
 
 from .models import Film, FilmConfig
@@ -98,6 +99,13 @@ def submit_film(request):
     return JsonResponse(context)
 
 
+@user_passes_test(lambda u: u.is_superuser)
+def delete_film(request, film_id):
+    film = Film.objects.get(film_id=film_id)
+    film.delete()
+    return HttpResponseRedirect('/dashboard/films/')
+
+
 @login_required
 def submit_votes(request):
     user = request.user
@@ -144,3 +152,4 @@ def submit_votes(request):
 @login_required
 def films(request):
     return render(request, 'film_management/films.html', {'films': Film.objects.all()})
+
