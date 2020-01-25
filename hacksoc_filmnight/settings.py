@@ -114,6 +114,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '***REMOVED***'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=['york.ac.uk']
 
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/dashboard/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
