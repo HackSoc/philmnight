@@ -21,7 +21,7 @@
                 {% if user.is_authenticated %}
                     <a href="/dashboard">Welcome back {{ user.email }}</a>
                 {% else %}
-                    <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">Sign in with a UoY email</a>
+                    <a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with a UoY email</a>
                 {% endif %}
             </div>
         </div>
