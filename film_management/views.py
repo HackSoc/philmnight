@@ -103,7 +103,7 @@ def submit_film(request):
 def delete_film(request, film_id):
     film = Film.objects.get(film_id=film_id)
     film.delete()
-    return HttpResponseRedirect('/dashboard/films/')
+    return HttpResponseRedirect('/films/')
 
 
 @login_required
