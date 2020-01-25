@@ -23,7 +23,6 @@ urlpatterns = [
     path('', views.index),
     path('', include('social_django.urls', namespace='social')),
     path('admin/', admin.site.urls),
-    path('discord/', include('discord_auth.urls')),
     path('film_management/', include('film_management.urls')),
     path('dashboard/', fm_views.dashboard),
     path('films/', fm_views.films),

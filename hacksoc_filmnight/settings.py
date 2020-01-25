@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'film_management.apps.FilmManagementConfig',
-    'discord_auth.apps.DiscordAuthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,7 +143,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-LOGIN_URL = '/discord/auth'
+LOGIN_URL = '/'
 
 TMDB_ENDPOINT = '***REMOVED***'
 TMDB_KEY = '***REMOVED***'
