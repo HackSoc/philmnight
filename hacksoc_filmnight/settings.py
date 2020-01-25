@@ -152,5 +152,5 @@ TMDB_KEY = '***REMOVED***'
 if 'DYNO' in os.environ:
     django_heroku.settings(locals())
     SECURE_SSL_REDIRECT = True
-#    DEBUG = False
+    DEBUG = False
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
