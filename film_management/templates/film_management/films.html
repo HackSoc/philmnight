@@ -17,7 +17,7 @@
                     <th>Film Name</th>
                     <th id="in-current-vote">In current vote</th>
                     <th id="date-submitted">Date submitted</th>
-                    {% if user.is_superuser %}<th id="delete-stupid-suggestion"></th>
+                    {% if user.is_superuser %}<th id="delete-stupid-suggestion"></th>{% endif %}
                 </tr>
                 {% for film in films %}
                 <tr>
@@ -25,7 +25,7 @@
                     <td>{{ film.name }}</td>
                     <td>{% if film.in_current_vote %}✔{% endif %}</td>
                     <td>{{ film.date_submitted }}</td>
-                    <td><a href="/film_management/delete_film/{{ film.film_id }}">Delete</a></td>
+                    {% if user.is_superuser %}<td><a href="/film_management/delete_film/{{ film.film_id }}">Delete</a></td>{% endif %}
                 </tr>
                 {% endfor %}
             </table>
