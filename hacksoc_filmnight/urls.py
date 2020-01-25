@@ -27,6 +27,5 @@ urlpatterns = [
     path('film_management/', include('film_management.urls')),
     path('dashboard/', fm_views.dashboard),
     path('films/', fm_views.films),
-    #path('auth_email/', views.auth_email),
     path('logout/', views.logout_view)
 ]
