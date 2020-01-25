@@ -19,7 +19,7 @@
             </div>
             <div id="auth-links">
                 {% if user.is_authenticated %}
-                    <a href="/dashboard">Welcome back {{ user.email }}</a>
+                    <a href="/dashboard">Welcome back {{ user.first_name }} {{ user.last_name }}</a>
                 {% else %}
                     <a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with a UoY email</a>
                 {% endif %}
