@@ -117,7 +117,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=['york.ac.uk']
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/dashboard/'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
-    'prompt': 'select_account'
+    'prompt': 'select_account',
+    'hd': 'york.ac.uk'
 }
 
 # Internationalization
