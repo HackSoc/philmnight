@@ -116,6 +116,10 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=['york.ac.uk']
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/dashboard/'
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
+    'prompt': 'select_account'
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
