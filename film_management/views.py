@@ -53,9 +53,13 @@ def dashboard(request):
             film_config.shortlist.clear()
             film_config.last_shortlist = datetime.datetime.now()
 
+            top_film = Film.objects.order_by('-vote_count')[0]
+            top_film.watched = True
+
             for film in available_films:
-                film.vote_count = 0
-                film.save()
+                if not film.watched:
+                    film.vote_count = 0 
+                    film.save()
 
             for i in range(film_config.shortlist_length):
                 chosen_film = random.choice(available_films)
