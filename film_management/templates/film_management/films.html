@@ -19,11 +19,16 @@
                     {% if user.is_superuser %}<th id="delete"></th>{% endif %}
                 </tr>
                 {% for film in films %}
-                <tr>
+                <tr id="{{ film.film_id }}">
                     <td><img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}"></td>
                     <td>{{ film.name }}</td>
                     <td>{{ film.date_submitted }}</td>
                     {% if user.is_superuser %}<td><a href="/film_management/delete_film/{{ film.film_id }}">Delete</a></td>{% endif %}
+                    <style>
+                    #{{ film.film_id }} {
+                        background-image: url('{{ film.backdrop_path }}');
+                    }
+                    </style>
                 </tr>
                 {% endfor %}
                 {% if user.is_superuser %}
