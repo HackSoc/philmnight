@@ -26,7 +26,7 @@
                     {% if user.is_superuser %}<td><a href="/film_management/delete_film/{{ film.film_id }}">Delete</a></td>{% endif %}
                     <style>
                     #{{ film.film_id }} {
-                        background-image: url('{{ film.backdrop_path }}');
+                        background-image: url('https://image.tmdb.org/t/p/w1000{{ film.backdrop_path }}');
                     }
                     </style>
                 </tr>
