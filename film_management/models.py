@@ -22,6 +22,7 @@ class Film(models.Model):
     watched = models.BooleanField(default=False)
 
     poster_path = models.CharField(default='', max_length=100)
+    backdrop_path = models.CharField(default='', max_length=100)
 
     submitting_user = models.ForeignKey(User, blank=True, null=True,
                                         on_delete=models.CASCADE)
@@ -46,6 +47,7 @@ class Film(models.Model):
                             '&api_key=' + TMDB_KEY)
             film_info = requests.get(request_path).json()['results'][0]
             self.poster_path = film_info['poster_path']
+            self.backdrop_path = film_info['backdrop_path']
         except IndexError:
             self.poster_path = ''
 
