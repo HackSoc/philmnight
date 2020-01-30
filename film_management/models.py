@@ -28,6 +28,9 @@ class Film(models.Model):
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
     # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
         """
