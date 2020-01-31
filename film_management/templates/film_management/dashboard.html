@@ -62,7 +62,29 @@
                 <form method="POST" action="/film_management/submit_film/" id="submit-form">
                     {% csrf_token %}
                     <input type="text" id="film-input" name="film_name" autocomplete="off">
-                    <input type="submit" id="film-submit">
+                    <div id="film-dropdown">
+                    </div>
+                    <script>
+                        document.getElementById('film-input').addEventListener("change", function () {
+                            var request = new XMLHttpRequest()
+                            request.open('POST', '/film_management/search_films/')
+                            request.setRequestHeader('X-CSRFToken', '{{ csrf_token }}')
+                            request.onreadystatechange = function () {
+                                if (request.readyState === 4) {
+                                    var data = JSON.parse(request.response)['films']
+                                    var dropdown = document.getElementById('film-dropdown')
+                                    dropdown.innerHTML = ''
+                                    for (index in data) {
+                                        var film = data[index]
+                                        
+                                        dropdown.innerHTML += '<p><a href="/film_management/submit_film/' + film[1].toString() + '">' + film[0] + '</a></p>'
+                                    }
+                                }
+                            }
+                            request.send(document.getElementById('film-input').value)
+
+                        })
+                    </script>
                 </form>
                 <p id="response-message" style="opacity: 0">.</p>
                 <script>

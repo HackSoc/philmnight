@@ -3,7 +3,7 @@ body {
   color: #372d43;
   font-family: 'Inconsolata', monospace;
   margin: 0;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 h1,
@@ -70,5 +70,9 @@ h1 {
 }
 
 #films-link {
-  margin-top: 20px;
+  margin: 20px;
+}
+
+#film-dropdown {
+  text-align: center;
 }

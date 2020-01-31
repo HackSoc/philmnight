@@ -26,6 +26,6 @@ urlpatterns = [
     path('film_management/', include('film_management.urls')),
     path('dashboard/', fm_views.dashboard),
     path('films/', fm_views.films),
-    path('films/<str:film_id>', fm_views.film),
+    path('films/<str:tmdb_id>', fm_views.film),
     path('logout/', views.logout_view)
 ]

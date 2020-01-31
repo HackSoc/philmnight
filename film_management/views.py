@@ -1,6 +1,7 @@
 import datetime
 import random
 import ast
+import requests
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -8,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from django.db.utils import IntegrityError
 
+from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 from .models import Film, FilmConfig
 
 FILM_TIMEOUT = 10
@@ -79,9 +81,7 @@ def dashboard(request):
 
 
 @login_required
-def submit_film(request):
-    new_film = request.POST.get('film_name', '')
-
+def submit_film(request, tmdb_id):
     try:
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
@@ -91,19 +91,14 @@ def submit_film(request):
         pass
 
     context = {'success': True}
+    print(tmdb_id)
+    Film.objects.create(tmdb_id=tmdb_id, submitting_user=request.user)
 
-    if new_film:
-        try:
-            Film.objects.create(name=fix_caps(new_film), submitting_user=request.user)
-        except IntegrityError:
-            context['success'] = False
-            context['error'] = 1
-            
+    return HttpResponseRedirect('/dashboard/')
 
-    return JsonResponse(context)
-
-def film(request, film_id):
-    film = Film.objects.get(film_id=film_id)
+@login_required
+def film(request, tmdb_id):
+    film = Film.objects.get(tmdb_id=tmdb_id)
     return render(request, 'film_management/film.html', { 'film': film })
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -159,3 +154,17 @@ def submit_votes(request):
 def films(request):
     return render(request, 'film_management/films.html', {'films': Film.objects.all()})
 
+
+@login_required
+def search_films(request):
+    current_string = request.body.decode('utf-8')
+
+    request_path = (TMDB_ENDPOINT + 'search/movie?query=' + current_string +
+        '&api_key=' + TMDB_KEY)
+    response = requests.get(request_path).json()
+    films = []
+    response['results'] = response['results'][:6]
+    for film in response['results']:
+        films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']])
+
+    return JsonResponse({'films': films})

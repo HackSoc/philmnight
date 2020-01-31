@@ -4,8 +4,9 @@ from . import views
 app_name = 'film_management'
 
 urlpatterns = [
-    path('submit_film/', views.submit_film),
+    path('submit_film/<int:tmdb_id>', views.submit_film),
     path('submit_votes/', views.submit_votes),
+    path('search_films/', views.search_films),
     path('delete_film/<str:film_id>', views.delete_film),
 ]
 
