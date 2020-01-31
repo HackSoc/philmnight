@@ -21,6 +21,20 @@ table {
   text-align: left;
 }
 
+tr {
+  cursor: pointer;
+  transition: background-color 0.3s linear;
+  height: 50px;
+}
+
+tr:hover {
+  background-color: #e8dafa;
+}
+
+th {
+  margin: 20px;
+}
+
 #date-submitted {
   width: 30%;
 }

@@ -16,6 +16,9 @@ class Film(models.Model):
     """Stores information regarding an individual film."""
 
     name = models.CharField(max_length=70, blank=False)
+    description = models.TextField(default='', null=True)
+    tagline = models.TextField(default='', null=True)
+
     film_id = models.CharField(max_length=70, unique=True, blank=True)
     vote_count = models.IntegerField(default=0)
     in_current_vote = models.BooleanField(default=False)
@@ -45,9 +48,14 @@ class Film(models.Model):
         try:
             request_path = (TMDB_ENDPOINT + 'search/movie?query=' + self.name +
                             '&api_key=' + TMDB_KEY)
-            film_info = requests.get(request_path).json()['results'][0]
+            film_id = requests.get(request_path).json()['results'][0]['id']
+            request_path = (TMDB_ENDPOINT + 'movie/' + str(film_id) + '?api_key=' + TMDB_KEY)
+            film_info = requests.get(request_path).json()
+
+            self.description = film_info['summary']
             self.poster_path = film_info['poster_path']
             self.backdrop_path = film_info['backdrop_path']
+            self.tagline = film_info['tagline']
         except IndexError:
             self.poster_path = ''
 

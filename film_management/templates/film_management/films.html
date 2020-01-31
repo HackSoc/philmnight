@@ -11,7 +11,7 @@
     <body>
         <div id="content">
             <h1>Watchlist</h1>
-            <table>
+            <table cellspacing="0">
                 <tr>
                     <th></th>
                     <th>Film Name</th>
@@ -19,7 +19,7 @@
                     {% if user.is_superuser %}<th id="delete"></th>{% endif %}
                 </tr>
                 {% for film in films %}
-                <tr id="{{ film.film_id }}">
+                <tr id="{{ film.film_id }}" onclick="window.open('/films/{{ film.film_id }}','_blank')">
                     <td><img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}"></td>
                     <td>{{ film.name }}</td>
                     <td>{{ film.date_submitted }}</td>
