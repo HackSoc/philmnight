@@ -9,7 +9,13 @@
         <title>{{ film.name }}</title>
         <style>
         body {
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.6)), url('https://image.tmdb.org/t/p/original/{{ film.backdrop_path }}')
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.8)), url('https://image.tmdb.org/t/p/original/{{ film.backdrop_path }}')
+        }
+
+        @media screen and (max-width: 500px) {
+            body {
+                background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://image.tmdb.org/t/p/original/{{ film.backdrop_path }}');
+            }
         }
         </style>
     </head>
