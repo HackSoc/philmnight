@@ -52,7 +52,7 @@ class Film(models.Model):
             request_path = (TMDB_ENDPOINT + 'movie/' + str(film_id) + '?api_key=' + TMDB_KEY)
             film_info = requests.get(request_path).json()
 
-            self.description = film_info['summary']
+            self.description = film_info['overview']
             self.poster_path = film_info['poster_path']
             self.backdrop_path = film_info['backdrop_path']
             self.tagline = film_info['tagline']
