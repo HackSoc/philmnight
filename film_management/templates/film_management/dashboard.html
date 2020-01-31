@@ -83,50 +83,7 @@
 
                     })
                 </script>
-                <p id="response-message" style="opacity: 0">.</p>
-                <script>
-                var timeRemaining = 0
-                document.addEventListener('submit', function (e) {
-                    e.preventDefault()
-                    const form = e.target
-
-                    fetch(form.action, {
-                        method: form.method,
-                        body: new FormData(form)
-                    }).then(function (response) {
-                        response.json().then(function (data) {
-                            var responseMessage = document.getElementById('response-message')
-                            if (!data['success']) {
-                                if (data['error'] === 1) {
-                                    responseMessage.innerHTML = 'Film already submitted'
-                                    setTimeout(function () {
-                                        responseMessage.style.opacity = '0'
-                                    }, 1500)
-                                } else if (data['error'] === 2) {
-                                    timeRemaining = data['time']
-                                    responseMessage.innerHTML = 'You are doing that too fast. Try again in ' + timeRemaining + ' seconds'
-                                    var timeDecrementInterval = setInterval(function () {
-                                        timeRemaining -= 1
-                                        if (timeRemaining < 0) {
-                                            responseMessage.style.opacity = '0'
-                                            clearInterval(timeDecrementInterval)
-                                        } else {
-                                            responseMessage.innerHTML = 'You are doing that too fast. Try again in ' + timeRemaining + ' seconds'   
-                                        }
-                                    }, 1000)
-                                }
-                                responseMessage.style.opacity = '1'
-                            } else {
-                                responseMessage.innerHTML = 'Successfully added film'
-                                responseMessage.style.opacity = '1'
-                                setTimeout(function () {
-                                   responseMessage.style.opacity = '0'
-                                }, 1500)
-                            }
-                        })
-                    })
-                })
-                </script>
+                <p id="response-message">{{ response_string }}</p>
                 <a id="films-link" href="/films/">See all submitted films</a>
             {% endif %}
         </div>

@@ -63,7 +63,21 @@ def dashboard(request):
 
         return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all(), 'current_votes': current_votes})
 
-    return render(request, 'film_management/dashboard.html', {'is_filmweek': False})
+    success = request.GET.get('success', -1)
+    error = request.GET.get('error', '-1')
+    time_remaining = request.GET.get('time', '-1')
+
+    response_string = ''
+    if success != -1:
+        if success:
+            response_string = 'Successfully added film'
+        else:
+            if error == 1:
+                response_string = 'Film already submitted'
+            elif error == 2:
+                response_string = 'You are doing that too fast, try again in ' + str(time) + 'seconds'
+
+    return render(request, 'film_management/dashboard.html', {'is_filmweek': False, 'response_string': response_string})
 
 
 @login_required
@@ -72,15 +86,18 @@ def submit_film(request, tmdb_id):
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
-            return JsonResponse({'success': False, 'error': 2, 'time': FILM_TIMEOUT-last_submit_delta})
+            return HttpResponseRedirect('/dashboard/?success=False&error=2&time=' + str(FILM_TIMEOUT-last_submit_delta))
     except IndexError:
         pass
 
     context = {'success': True}
     print(tmdb_id)
-    Film.objects.create(tmdb_id=tmdb_id, submitting_user=request.user)
+    try:
+        Film.objects.create(tmdb_id=tmdb_id, submitting_user=request.user)
+    except IntegrityError:
+        return HttpResponseRedirect('/dashboard/?success=False&error=1')
 
-    return HttpResponseRedirect('/dashboard/')
+    return HttpResponseRedirect('/dashboard/?success=True')
 
 @login_required
 def film(request, tmdb_id):

@@ -5,6 +5,7 @@ body {
   overflow-x: hidden;
   background-size: cover;
   background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 html,
@@ -30,4 +31,20 @@ h6 {
 p {
   width: 40%;
   min-width: 400px;
+}
+
+@media screen and (max-width: 500px) {
+  body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  p {
+    min-width: auto;
+    margin: auto;
+    width: 90%;
+  }
 }
