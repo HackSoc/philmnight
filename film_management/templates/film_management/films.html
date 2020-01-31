@@ -24,11 +24,6 @@
                     <td>{{ film.name }}</td>
                     <td>{{ film.date_submitted }}</td>
                     {% if user.is_superuser %}<td><a href="/film_management/delete_film/{{ film.film_id }}">Delete</a></td>{% endif %}
-                    <style>
-                    #{{ film.film_id }} {
-                        background-image: url('https://image.tmdb.org/t/p/original{{ film.backdrop_path }}');
-                    }
-                    </style>
                 </tr>
                 {% endfor %}
                 {% if user.is_superuser %}
