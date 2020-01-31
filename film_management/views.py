@@ -142,7 +142,7 @@ def submit_votes(request):
 
 @login_required
 def films(request):
-    return render(request, 'film_management/films.html', {'films': Film.objects.all()})
+    return render(request, 'film_management/films.html', {'films': Film.objects.order_by('name')})
 
 
 @login_required
