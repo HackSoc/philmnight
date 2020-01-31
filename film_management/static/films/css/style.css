@@ -19,6 +19,7 @@ h6 {
   font-family: 'Roboto Slab', monospace;
   font-weight: 200;
   margin: 20px;
+  text-align: center;
 }
 
 table {
@@ -38,6 +39,7 @@ tr:hover {
 
 th {
   margin: 20px;
+  cursor: default;
 }
 
 #date-submitted {
