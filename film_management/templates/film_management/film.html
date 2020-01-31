@@ -18,6 +18,7 @@
             <h1>{{ film.name }}</h1>
             <h2>{{ film.tagline }}</h2>
             <p>{{ film.description }}</p>
+            {% if user.is_superuser %}<p>Submitting user: {{ film.submitting_user.first_name }} {{ film.submitting_user.last_name }}</p>{% endif %}
         </div>
     </body>
 </html>
