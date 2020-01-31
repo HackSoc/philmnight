@@ -102,13 +102,15 @@ def submit_film(request):
 
     return JsonResponse(context)
 
+def film(request, film_id):
+    film = Film.objects.get(film_id=film_id)
+    return render(request, 'film_management/film.html', { 'film': film })
 
 @user_passes_test(lambda u: u.is_superuser)
 def delete_film(request, film_id):
     film = Film.objects.get(film_id=film_id)
     film.delete()
     return HttpResponseRedirect('/films/')
-
 
 @login_required
 def submit_votes(request):
