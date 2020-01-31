@@ -26,3 +26,8 @@ h6 {
 #content {
   margin: 20px;
 }
+
+p {
+  width: 40%;
+  min-width: 400px;
+}
