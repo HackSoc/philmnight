@@ -18,6 +18,7 @@ h5,
 h6 {
   font-family: 'Roboto Slab', monospace;
   font-weight: 200;
+  margin: 20px;
 }
 
 table {
