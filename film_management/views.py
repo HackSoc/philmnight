@@ -72,7 +72,7 @@ def submit_film(request, tmdb_id):
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
-            messages.add_message(request, messages.ERROR, 'You are doing that too fast. Try again in ' + str(FILM_TIMEOUT-last_submit_delta))
+            messages.add_message(request, messages.ERROR, 'You are doing that too fast. Try again in ' + str(FILM_TIMEOUT-last_submit_delta) + ' seconds')
             return HttpResponseRedirect('/dashboard/')
     except IndexError:
         pass
@@ -91,8 +91,8 @@ def film(request, tmdb_id):
     return render(request, 'film_management/film.html', { 'film': film })
 
 @user_passes_test(lambda u: u.is_superuser)
-def delete_film(request, film_id):
-    film = Film.objects.get(film_id=film_id)
+def delete_film(request, tmdb_id):
+    film = Film.objects.get(tmdb_id=tmdb_id)
     film.delete()
     return HttpResponseRedirect('/films/')
 
@@ -155,11 +155,14 @@ def search_films(request):
         films = []
 
         while len(films) < 5:
-            film = response[len(films)]
-            if not Film.objects.filter(tmdb_id=film['id']).exists():
-                films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']])
-            else:
-                response.remove(film)
+            try:
+                film = response[len(films)]
+            except IndexError:
+                break
+            #if not Film.objects.filter(tmdb_id=film['id']).exists():
+            films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']])
+            #else:
+            #    response.remove(film)
 
         return JsonResponse({'films': films})
     return JsonResponse({'success': False})

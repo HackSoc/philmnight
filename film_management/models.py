@@ -31,7 +31,7 @@ class Film(models.Model):
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
-    tmdb_id = models.IntegerField(default=0, null=True, unique=False)
+    tmdb_id = models.IntegerField(default=0, null=True, unique=True)
 
     def __str__(self):
         return self.name
