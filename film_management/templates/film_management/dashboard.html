@@ -15,13 +15,6 @@
     <body>
         <div id="content">
             {% if is_filmweek %}
-                {% if top_film %}
-                    <div id="chosen-film">
-                        <h1>Chosen Film</h1>
-                        <p>{{ top_film.name }}</p>
-                        <img class="film-image" src="{% if top_film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ top_film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
-                    </div>
-                {% else %}
                 <h1>Voting is open</h1>
                     <div id="films">
                         {% for film in shortlisted_films %}
@@ -56,7 +49,6 @@
                     }
                     </script>
                     <a id="films-link" href="/films/">See all submitted films</a>
-                {% endif %}
             {% else %}
                 <h1>Submissions are open</h1>
                 <input type="text" id="film-input" name="film_name" autocomplete="off">
