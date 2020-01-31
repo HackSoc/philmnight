@@ -3,12 +3,31 @@
     <head>
         {% load static %}
         <meta name="viewport" content="width=device-width, initial-scale=1">        
-        <link rel="stylesheet" type="text/css" href="{% static 'films/css/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'films/film/css/style.css' %}">
         <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
         <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
-        <title>{{ film.film }}</title>
+        <title>{{ film.name }}</title>
+        <style>
+        body {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.6)), url('https://image.tmdb.org/t/p/original/{{ film.backdrop_path }}')
+        }
+        </style>
     </head>
     <body>
-        {{ film.film }}
+        <div id="content">
+            <h1>{{ film.name }}</h1>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+            <p>Yeet</p>
+        </div>
     </body>
 </html>

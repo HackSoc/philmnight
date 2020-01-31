@@ -21,8 +21,8 @@ class Film(models.Model):
     in_current_vote = models.BooleanField(default=False)
     watched = models.BooleanField(default=False)
 
-    poster_path = models.CharField(default='', max_length=100)
-    backdrop_path = models.CharField(default='', max_length=100)
+    poster_path = models.CharField(default='', max_length=100, null=True)
+    backdrop_path = models.CharField(default='', max_length=100, null=True)
 
     submitting_user = models.ForeignKey(User, blank=True, null=True,
                                         on_delete=models.CASCADE)
