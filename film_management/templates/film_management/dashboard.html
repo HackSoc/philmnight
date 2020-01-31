@@ -83,7 +83,7 @@
 
                     })
                 </script>
-                <p id="response-message">{{ response_string }}</p>
+                <p unselectable="on" id="response-message">{% if messages %}{% for message in messages %}{{ message }}{% endfor %}<script>setTimeout(function () {document.getElementById('response-message').style.opacity = '0'}, 3000)</script>{% else %}.<style>#response-message {opacity: 0;}</style>{% endif %}</p>
                 <a id="films-link" href="/films/">See all submitted films</a>
             {% endif %}
         </div>

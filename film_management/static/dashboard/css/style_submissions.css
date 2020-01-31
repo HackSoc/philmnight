@@ -66,7 +66,11 @@ h1 {
 
 #response-message {
   transition: opacity linear 0.3s;
-
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
 }
 
 #films-link {

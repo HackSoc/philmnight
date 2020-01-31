@@ -6,7 +6,7 @@ import requests
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
-
+from django.contrib import messages
 from django.db.utils import IntegrityError
 
 from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
@@ -63,21 +63,7 @@ def dashboard(request):
 
         return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all(), 'current_votes': current_votes})
 
-    success = request.GET.get('success', -1)
-    error = request.GET.get('error', '-1')
-    time_remaining = request.GET.get('time', '-1')
-
-    response_string = ''
-    if success != -1:
-        if success:
-            response_string = 'Successfully added film'
-        else:
-            if error == 1:
-                response_string = 'Film already submitted'
-            elif error == 2:
-                response_string = 'You are doing that too fast, try again in ' + str(time) + 'seconds'
-
-    return render(request, 'film_management/dashboard.html', {'is_filmweek': False, 'response_string': response_string})
+    return render(request, 'film_management/dashboard.html', {'is_filmweek': False})
 
 
 @login_required
@@ -86,18 +72,18 @@ def submit_film(request, tmdb_id):
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
-            return HttpResponseRedirect('/dashboard/?success=False&error=2&time=' + str(FILM_TIMEOUT-last_submit_delta))
+            messages.add_message(request, messages.ERROR, 'You are doing that too fast. Try again in ' + str(FILM_TIMEOUT-last_submit_delta))
+            return HttpResponseRedirect('/dashboard/')
     except IndexError:
         pass
 
-    context = {'success': True}
-    print(tmdb_id)
     try:
         Film.objects.create(tmdb_id=tmdb_id, submitting_user=request.user)
+        messages.add_message(request, messages.SUCCESS, 'Successfully added film')
     except IntegrityError:
-        return HttpResponseRedirect('/dashboard/?success=False&error=1')
+        messages.add_message(request, messages.ERROR, 'Film already exists in database.')
 
-    return HttpResponseRedirect('/dashboard/?success=True')
+    return HttpResponseRedirect('/dashboard/')
 
 @login_required
 def film(request, tmdb_id):
@@ -162,12 +148,18 @@ def films(request):
 def search_films(request):
     current_string = request.body.decode('utf-8')
 
-    request_path = (TMDB_ENDPOINT + 'search/movie?query=' + current_string +
-        '&api_key=' + TMDB_KEY)
-    response = requests.get(request_path).json()
-    films = []
-    response['results'] = response['results'][:6]
-    for film in response['results']:
-        films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']])
+    if current_string != '':
+        request_path = (TMDB_ENDPOINT + 'search/movie?query=' + current_string +
+            '&api_key=' + TMDB_KEY)
+        response = requests.get(request_path).json()['results']
+        films = []
 
-    return JsonResponse({'films': films})
+        while len(films) < 5:
+            film = response[len(films)]
+            if not Film.objects.filter(tmdb_id=film['id']).exists():
+                films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']])
+            else:
+                response.remove(film)
+
+        return JsonResponse({'films': films})
+    return JsonResponse({'success': False})
