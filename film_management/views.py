@@ -27,20 +27,6 @@ def get_config():
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1,1,1))
 
 
-def fix_caps(string):
-    # Convert to title case list
-    string = string.title().split(' ')
-    exceptions = ['or', 'a', 'an', 'the', 'and', 'but', 'for', 'nor', 'at', 'from']
-
-    # Decapitalise exceptions
-    for i in range(1, len(string)):
-        if string[i] in exceptions:
-            string[i] = string[i].lower() 
-
-    string = ' '.join(string)
-    return string
-
-
 @login_required
 def dashboard(request):
     if is_filmweek():
