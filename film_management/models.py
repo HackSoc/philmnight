@@ -31,6 +31,8 @@ class Film(models.Model):
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
 
+    release_date = models.DateTimeField(blank=True, auto_now_add=True)
+
     tmdb_id = models.IntegerField(default=0, null=True, unique=True)
 
     def __str__(self):
@@ -63,6 +65,13 @@ class Film(models.Model):
             self.backdrop_path = film_info['backdrop_path']
             self.tagline = film_info['tagline']
             self.tmdb_id = film_info['id']
+
+            release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
+            if datetime.datetime.now() < release_date:
+                raise IntegrityError
+            else:
+                self.release_date = release_date
+
         except IndexError:
             self.poster_path = ''
 
