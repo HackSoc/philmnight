@@ -101,3 +101,7 @@ h1 {
   width: 100vw;
   height: 30px;
 }
+
+.strikethrough {
+  text-decoration: line-through;
+}
