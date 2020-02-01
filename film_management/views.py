@@ -160,10 +160,10 @@ def search_films(request):
                 film = response[len(films)]
             except IndexError:
                 break
-            #if not Film.objects.filter(tmdb_id=film['id']).exists():
-            films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']])
-            #else:
-            #    response.remove(film)
+            if not Film.objects.filter(tmdb_id=film['id']).exists():
+                films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']], False)
+            else:
+                films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id']], True)
 
         return JsonResponse({'films': films})
     return JsonResponse({'success': False})

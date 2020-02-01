@@ -66,8 +66,11 @@
                                 dropdown.innerHTML = ''
                                 for (index in data) {
                                     var film = data[index]
-                                    
-                                    dropdown.innerHTML += '<p><a href="/film_management/submit_film/' + film[1].toString() + '">' + film[0] + '</a></p>'
+                                    if (film[2] !== true) {
+                                        dropdown.innerHTML += '<p><a href="/film_management/submit_film/' + film[1].toString() + '">' + film[0] + '</a></p>'
+                                    } else {
+                                        dropdown.innerHTML += '<p><del>' + film[0] + '</del></p>'
+                                    }
                                 }
                             }
                         }
