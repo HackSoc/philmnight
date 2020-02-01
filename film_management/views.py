@@ -161,7 +161,10 @@ def search_films(request):
             except IndexError:
                 break
             if not Film.objects.filter(tmdb_id=film['id']).exists():
-                films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], False])
+                if datetime.datetime.now() < datetime.datetime.strptime(film['release_date'], '%Y-%m-%d'):
+                    films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], True])
+                else:
+                    films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], False])
             else:
                 films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], True])
 
