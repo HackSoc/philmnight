@@ -67,8 +67,8 @@ class Film(models.Model):
             self.tmdb_id = film_info['id']
 
             release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
-            if film_info['status'] != 'Released':
-                raise IntegrityError(self.name + ' has not been released yet. Status: ' + film_info['status'])
+            if datetime.datetime.now() < release_date:
+                raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date))
             self.release_date = release_date
 
         except IndexError:
