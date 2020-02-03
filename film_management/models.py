@@ -68,7 +68,7 @@ class Film(models.Model):
 
             release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
             if datetime.datetime.now() < release_date:
-                raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date))
+                raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
             self.release_date = release_date
 
         except IndexError:
