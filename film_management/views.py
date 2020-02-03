@@ -47,7 +47,7 @@ def dashboard(request):
 
             for film in available_films:
                 if not film.watched:
-                    film.vote_count = 0 
+                    film.vote_count = 0
                     film.save()
 
             for i in range(film_config.shortlist_length):
