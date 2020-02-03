@@ -68,7 +68,7 @@ class Film(models.Model):
 
             release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
             if datetime.datetime.now() < release_date:
-                raise IntegrityError
+                raise IntegrityError(self.name + ' has not been released yet')
             else:
                 self.release_date = release_date
 
