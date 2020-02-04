@@ -18,7 +18,7 @@
                 <h1>Voting is open</h1>
                     <div id="films">
                         {% for film in shortlisted_films %}
-                            <div class="film" onclick="updateFilm(this)" data-identifier="{{ film.film_id }}">
+                            <div class="film" onclick="updateFilm(this)" data-identifier="{{ film.tmdb_id }}">
                                 <p>{{ film.name }}</p>
                                 <img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
                             </div>
@@ -44,7 +44,7 @@
                     }
 
                     for (var i=0; i<checkedFilms.length; i++) {
-                        var element = document.querySelector('[data-identifier='+checkedFilms[i]+']')
+                        var element = document.querySelector('[data-identifier="'+checkedFilms[i]+'"]')
                         element.style.backgroundColor = '#e8dafa'
                     }
                     </script>
