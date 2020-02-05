@@ -112,7 +112,7 @@ class Profile(models.Model):
             if item == '':
                 current_votes.remove(item)
 
-        self.current_votes = current_votes
+        self.current_votes = ','.join(current_votes)
         super(Profile, self).save(*args, **kwargs)
 
 
