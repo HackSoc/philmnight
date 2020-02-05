@@ -106,6 +106,15 @@ class Profile(models.Model):
     current_votes = models.TextField(blank=True, default='')
     last_vote = models.DateTimeField(default=datetime.datetime.min)
 
+    def save(self, *args, **kwargs):
+        current_votes = self.current_votes.split(',')
+        for item in current_votes:
+            if item == '':
+                current_votes.remove(item)
+
+        self.current_votes = current_votes
+        super(Profile, self).save(*args, **kwargs)
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
