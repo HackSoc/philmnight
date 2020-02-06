@@ -48,16 +48,9 @@ class Film(models.Model):
         field and search TMDB for film data and appropriate poster.
         """
         # pylint: disable=no-member
-        try:
-            request_path = (TMDB_ENDPOINT + 'search/movie?query=' + self.name +
-                            '&api_key=' + TMDB_KEY)
-            film_id = requests.get(request_path).json()['results'][0]['id']
-            request_path = (TMDB_ENDPOINT + 'movie/' + str(film_id) + '?api_key=' + TMDB_KEY)
-            film_info = requests.get(request_path).json()
 
-        except KeyError:
-            request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
-            film_info = requests.get(request_path).json()
+        request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
+        film_info = requests.get(request_path).json()
 
         self.name = film_info.get('title', 'Unknown')
         self.description = film_info.get('overview', 'No description available')
