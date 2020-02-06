@@ -20,6 +20,7 @@ class Film(models.Model):
     tagline = models.TextField(default='', null=True)
 
     vote_count = models.IntegerField(default=0)
+
     in_current_vote = models.BooleanField(default=False)
     watched = models.BooleanField(default=False)
 
@@ -48,31 +49,36 @@ class Film(models.Model):
         """
         # pylint: disable=no-member
         try:
-            try:
-                request_path = (TMDB_ENDPOINT + 'search/movie?query=' + self.name +
-                                '&api_key=' + TMDB_KEY)
-                film_id = requests.get(request_path).json()['results'][0]['id']
-                request_path = (TMDB_ENDPOINT + 'movie/' + str(film_id) + '?api_key=' + TMDB_KEY)
-                film_info = requests.get(request_path).json()
+            request_path = (TMDB_ENDPOINT + 'search/movie?query=' + self.name +
+                            '&api_key=' + TMDB_KEY)
+            film_id = requests.get(request_path).json()['results'][0]['id']
+            request_path = (TMDB_ENDPOINT + 'movie/' + str(film_id) + '?api_key=' + TMDB_KEY)
+            film_info = requests.get(request_path).json()
 
-            except KeyError:
-                request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
-                film_info = requests.get(request_path).json()
+        except KeyError:
+            request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
+            film_info = requests.get(request_path).json()
 
-            self.name = film_info['title']
-            self.description = film_info['overview']
-            self.poster_path = film_info['poster_path']
-            self.backdrop_path = film_info['backdrop_path']
-            self.tagline = film_info['tagline']
-            self.tmdb_id = film_info['id']
+        self.name = film_info.get('title', 'Unknown')
+        self.description = film_info.get('overview', 'No description available')
+        self.poster_path = film_info.get('poster_path', '')
+        self.backdrop_path = film_info.get('backdrop_path', '')
+        self.tagline = film_info.get('tagline', '')
+        self.tmdb_id = film_info['id']
 
-            release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
-            if datetime.datetime.now() < release_date:
-                raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
-            self.release_date = release_date
 
-        except IndexError:
-            self.poster_path = ''
+        release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
+        if datetime.datetime.now() < release_date:
+            raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
+        self.release_date = release_date
+
+        users = User.objects.all()
+        votes = 0
+        for user in users:
+            films = user.profile.current_votes.split(',')
+            if str(self.tmdb_id) in films:
+                votes += 1
+        self.vote_count = votes
 
         super(Film, self).save(*args, **kwargs)
 

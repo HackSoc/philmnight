@@ -102,7 +102,7 @@ def submit_votes(request):
     user = request.user
 
     config = get_config()
-###########
+
     # Clear votes from previous weeks
     if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
         user.profile.current_votes = ''
@@ -114,8 +114,6 @@ def submit_votes(request):
     except ValueError:
         success = False
 
-    print(submitted_films)
-    print(user.profile.current_votes.split(','))
     if success:
         old_votes = user.profile.current_votes.split(',')
 
@@ -124,16 +122,12 @@ def submit_votes(request):
                 film = Film.objects.get(tmdb_id=film)
                 if film not in config.shortlist.all():
                     return JsonResponse({'success': False})
-                film.vote_count += 1
-                film.save()
 
         for film in old_votes:
             if film not in submitted_films and film != '':
                 film = Film.objects.get(tmdb_id=film)
                 if film not in config.shortlist.all():
                     return JsonResponse({'success': False})
-                film.vote_count -= 1
-                film.save()
 
         user.profile.last_vote = datetime.datetime.now()
         user.profile.current_votes = ','.join(submitted_films)
