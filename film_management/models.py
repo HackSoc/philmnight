@@ -21,7 +21,6 @@ class Film(models.Model):
 
     vote_count = models.IntegerField(default=0)
 
-    in_current_vote = models.BooleanField(default=False)
     watched = models.BooleanField(default=False)
 
     poster_path = models.CharField(default='', max_length=100, null=True)
@@ -47,7 +46,6 @@ class Film(models.Model):
         Override save argument of film model to populate film_id
         field and search TMDB for film data and appropriate poster.
         """
-        # pylint: disable=no-member
 
         request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
         film_info = requests.get(request_path).json()
@@ -65,6 +63,7 @@ class Film(models.Model):
             raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
         self.release_date = release_date
 
+        # Generate vote count based upon number of users that have voted for film
         users = User.objects.all()
         votes = 0
         for user in users:
