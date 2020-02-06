@@ -30,12 +30,23 @@
                     function updateFilm (element) {
                         var filmBackground = element.style.backgroundColor
 
+
                         if (filmBackground === '') {
                             element.style.backgroundColor = '#e8dafa'
                             checkedFilms.push(element.getAttribute("data-identifier"))
+                            {% if user.is_superuser %}
+                            var count = parseInt(element.children[0].innerHTML.split('|')[1])
+                            count += 1
+                            element.children[0].innerHTML = element.children[0].innerHTML.split('|')[0] + '| ' + count.toString()
+                            {% endif %}
                         } else {
                             element.style.backgroundColor = ''
                             checkedFilms.splice(checkedFilms.indexOf(element.getAttribute("data-identifier")))
+                            {% if user.is_superuser %}
+                            var count = parseInt(element.children[0].innerHTML.split('|')[1])
+                            count -= 1
+                            element.children[0].innerHTML = element.children[0].innerHTML.split('|')[0] + '| ' + count.toString()
+                            {% endif %}
                         }
                         var voteRequest = new XMLHttpRequest()
                         voteRequest.open('POST', '/film_management/submit_votes/')

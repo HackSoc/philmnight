@@ -31,7 +31,7 @@ def get_config():
 def dashboard(request):
     if is_filmweek():
         if datetime.datetime.now().isocalendar()[2] == 5:
-            film = Film.objects.order_by('-vote_count')[0]
+            film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
             
             return HttpResponseRedirect('/films/' + str(film.tmdb_id))
 
@@ -42,13 +42,12 @@ def dashboard(request):
             film_config.shortlist.clear()
             film_config.last_shortlist = datetime.datetime.now()
 
-            top_film = Film.objects.order_by('-vote_count')[0]
+            top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
             top_film.watched = True
 
-            for film in available_films:
-                if not film.watched:
-                    film.vote_count = 0
-                    film.save()
+            for user in User.objects.all():
+                user.current_votes = ''
+                user.save()
 
             for i in range(film_config.shortlist_length):
                 chosen_film = random.choice(available_films)

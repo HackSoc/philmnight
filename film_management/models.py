@@ -12,16 +12,26 @@ from django.dispatch import receiver
 from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
 
+# pylint: disable=too-many-instance-attributes
 class Film(models.Model):
     """Stores information regarding an individual film."""
+
+    tmdb_id = models.IntegerField(default=1, null=True, unique=True)
 
     name = models.CharField(max_length=70, blank=False)
     description = models.TextField(default='', null=True)
     tagline = models.TextField(default='', null=True)
-
-    vote_count = models.IntegerField(default=0)
-
     watched = models.BooleanField(default=False)
+
+    @property
+    def votes(self):
+        users = User.objects.all()
+        votes = 0
+        for user in users:
+            films = user.profile.current_votes.split(',')
+            if str(self.tmdb_id) in films:
+                votes += 1
+        return votes
 
     poster_path = models.CharField(default='', max_length=100, null=True)
     backdrop_path = models.CharField(default='', max_length=100, null=True)
@@ -30,12 +40,10 @@ class Film(models.Model):
                                         on_delete=models.CASCADE)
 
     date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
-
     release_date = models.DateTimeField(blank=True, auto_now_add=True)
 
-    tmdb_id = models.IntegerField(default=0, null=True, unique=True)
-
     def __str__(self):
+        """Return a string representation of the model."""
         return self.name
 
     # pylint: disable=arguments-differ
@@ -57,20 +65,10 @@ class Film(models.Model):
         self.tagline = film_info.get('tagline', '')
         self.tmdb_id = film_info['id']
 
-
         release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
         if datetime.datetime.now() < release_date:
             raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
         self.release_date = release_date
-
-        # Generate vote count based upon number of users that have voted for film
-        users = User.objects.all()
-        votes = 0
-        for user in users:
-            films = user.profile.current_votes.split(',')
-            if str(self.tmdb_id) in films:
-                votes += 1
-        self.vote_count = votes
 
         super(Film, self).save(*args, **kwargs)
 
