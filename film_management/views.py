@@ -44,6 +44,7 @@ def dashboard(request):
 
             top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
             top_film.watched = True
+            top_film.save()
 
             for user in User.objects.all():
                 user.current_votes = ''
