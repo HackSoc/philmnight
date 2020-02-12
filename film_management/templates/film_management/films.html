@@ -23,7 +23,7 @@
                 <tr id="{{ film.tmdb_id }}">
                     <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')"><img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}"></td>
                     <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{{ film.name }}</td>
-                    <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{% for genre in film.genres %}{{ genre }}, {% endfor %}</td>
+                    <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{{ film.genres|join:', ' }}</td>
                     <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{{ film.date_submitted }}</td>
                     {% if user.is_superuser %}<td id="delete-button"><a href="/film_management/delete_film/{{ film.tmdb_id }}">Delete</a></td>{% endif %}
                 </tr>
