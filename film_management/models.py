@@ -22,7 +22,10 @@ class Film(models.Model):
     description = models.TextField(default='', null=True)
     tagline = models.TextField(default='', null=True)
     watched = models.BooleanField(default=False)
-    genres = models.TextField(default='', null=True)
+    _genres = models.TextField(default='', null=True)
+    @property
+    def genres(self):
+        return self._genres.split(',')
 
     @property
     def votes(self):
@@ -65,7 +68,7 @@ class Film(models.Model):
         self.backdrop_path = film_info.get('backdrop_path', '')
         self.tagline = film_info.get('tagline', '')
         self.tmdb_id = film_info['id']
-        self.genres = ','.join([genre['name'] for genre in film_info['genres']])
+        self._genres = ','.join([genre['name'] for genre in film_info['genres']])
 
         release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
         if datetime.datetime.now() < release_date:
