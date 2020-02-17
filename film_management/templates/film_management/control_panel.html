@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Control Panel</title>
+    </head>
+    <body>
+        <form>
+            <label>Genre Restriction: </label>
+            <select name="genre-night">
+                <option value="none">No Genre Restriction</option>
+                {% for genre in genres %}
+                    <option value="{{ genre }}">{{ genre }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </body>
+</html>

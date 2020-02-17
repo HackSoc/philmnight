@@ -8,6 +8,7 @@ urlpatterns = [
     path('submit_votes/', views.submit_votes),
     path('search_films/', views.search_films),
     path('delete_film/<str:tmdb_id>', views.delete_film),
+    path('control_panel/', views.control_panel)
 ]
 
 

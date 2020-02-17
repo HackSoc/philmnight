@@ -166,3 +166,14 @@ def search_films(request):
 
         return JsonResponse({'films': films})
     return JsonResponse({'success': False})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def control_panel(request):
+    genres = []
+    for film in Film.objects.all():
+        for genre in film.genres:
+            if genre not in genres and genre.strip() != '':
+                genres.append(genre)
+    context = {'genres': genres}
+    return render(request, 'film_management/control_panel.html', context)
