@@ -1,3 +1,4 @@
+"""Views for film management."""
 import datetime
 import random
 import ast
@@ -17,24 +18,34 @@ FILM_TIMEOUT = 10
 
 
 def is_filmweek():
+    """Return a boolean as to whether the current week is filmweek."""
     iso_date = datetime.date.today().isocalendar()
     return iso_date[1] % 2 == 0 and iso_date[2] <= 5
 
 
 def get_config():
+    """Return the film config. If it doesn't exist, create it."""
     try:
         return FilmConfig.objects.all()[0]
     except IndexError:
-        return FilmConfig.objects.create(last_shortlist=datetime.datetime(1,1,1))
+        return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
+
+
+def reset_votes():
+    """Reset all votes for every film to 0."""
+    for user in User.objects.all():
+        user.profile.current_votes = ''
+        user.save()
 
 
 @login_required
 def dashboard(request):
+    """View for dashboard - split in 2 at later date."""
     if is_filmweek():
         if datetime.datetime.now().isocalendar()[2] == 5:
-            film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
+            top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
             
-            return HttpResponseRedirect('/films/' + str(film.tmdb_id))
+            return HttpResponseRedirect('/films/' + str(top_film.tmdb_id))
 
         film_config = get_config()
         
@@ -47,9 +58,7 @@ def dashboard(request):
             top_film.watched = True
             top_film.save()
 
-            for user in User.objects.all():
-                user.profile.current_votes = ''
-                user.save()
+            reset_votes()
 
             for i in range(film_config.shortlist_length):
                 chosen_film = random.choice(available_films)

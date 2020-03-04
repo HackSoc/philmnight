@@ -25,17 +25,30 @@ class Film(models.Model):
     _genres = models.TextField(default='', null=True)
     @property
     def genres(self):
+        """Return film genres as a list."""
         return self._genres.split(',')
 
     @property
     def votes(self):
+        """Return number of voters."""
         users = User.objects.all()
-        votes = 0
+        vote_count = 0
         for user in users:
             films = user.profile.current_votes.split(',')
             if str(self.tmdb_id) in films:
-                votes += 1
-        return votes
+                vote_count += 1
+        return vote_count
+
+    @property
+    def voters(self):
+        """Return list containing usernames of voters."""
+        users = User.objects.all()
+        voters_list = []
+        for user in users:
+            films = user.profile.current_votes.split(',')
+            if str(self.tmdb_id) in films:
+                voters_list.append(user.first_name + user.last_name)
+        return voters_list
 
     poster_path = models.CharField(default='', max_length=100, null=True)
     backdrop_path = models.CharField(default='', max_length=100, null=True)
@@ -58,7 +71,6 @@ class Film(models.Model):
         Override save argument of film model to populate film_id
         field and search TMDB for film data and appropriate poster.
         """
-
         request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
         film_info = requests.get(request_path).json()
 
