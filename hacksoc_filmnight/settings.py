@@ -33,7 +33,6 @@ try:
 
     TMDB_ENDPOINT = os.environ['TMDB_ENDPOINT']
     TMDB_KEY = os.environ['TMDB_KEY']
-    print(TMDB_KEY)
 
 except KeyError:
     raise KeyError('Not all required environment variables present')
