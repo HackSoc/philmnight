@@ -48,7 +48,7 @@ def dashboard(request):
             top_film.save()
 
             for user in User.objects.all():
-                user.current_votes = ''
+                user.profile.current_votes = ''
                 user.save()
 
             for i in range(film_config.shortlist_length):
