@@ -20,7 +20,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '***REMOVED***'
+
+if not 'DYNO' in os.environ:
+    from dotenv import load_dotenv
+    load_dotenv()
+
+try:
+    SECRET_KEY = os.environ['SECRET_KEY']
+
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ['GOOGLE_OAUTH_KEY']
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ['GOOGLE_OAUTH_SECRET']
+
+    TMDB_ENDPOINT = os.environ['TMDB_ENDPOINT']
+    TMDB_KEY = os.environ['TMDB_KEY']
+    print(TMDB_KEY)
+
+except KeyError:
+    raise KeyError('Not all required environment variables present')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -106,9 +122,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '***REMOVED***'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '***REMOVED***'
-
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=['york.ac.uk']
 
@@ -143,9 +156,6 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_URL = '/'
-
-TMDB_ENDPOINT = '***REMOVED***'
-TMDB_KEY = '***REMOVED***'
 
 if 'DYNO' in os.environ:
     django_heroku.settings(locals())
