@@ -1,10 +1,8 @@
 :root {
   --bg-color: #f3f2f4;
   --fg-color: #372d43;
-
   --selected-bg-color: #e8dafa;
 }
-
 
 body {
   background-color: var(--bg-color);
@@ -23,4 +21,8 @@ h6 {
   font-family: 'Roboto Slab', monospace;
   font-weight: 200;
   margin-top: 0;
+}
+
+.selected {
+  background-color: var(--selected-bg-color);
 }
