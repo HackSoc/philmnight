@@ -2,12 +2,10 @@
 <html>
     <head>
         {% load static %}
-        <meta name="viewport" content="width=device-width, initial-scale=1">        
+        {% include 'bases/head_base.html' %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-        <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
-        <script src="https://apis.google.com/js/platform.js" async defer></script>        
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
         <meta name="google-signin-client_id" content="{{ GOOGLE_OAUTH_KEY }}">
-        <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
         <title>HackSoc Filmnight</title>
     </head>
     <body>

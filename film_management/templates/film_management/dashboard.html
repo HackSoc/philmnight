@@ -2,14 +2,12 @@
 <html>
     <head>
         {% load static %}
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% include 'bases/head_base.html' %}
         {% if is_filmweek %}
             <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_voting.css' %}">
         {% else %}
             <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submissions.css' %}">
         {% endif %}
-        <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Inconsolata:400,700" rel="stylesheet" type="text/css">
-        <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
         <title>Dashboard</title>
     </head>
     <body>
