@@ -23,3 +23,5 @@ tags
 [._]*.un~
 
 .env
+
+db.sqlite3
