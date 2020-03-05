@@ -42,8 +42,8 @@ h1 {
 }
 
 #auth-links a:hover {
-  background-color: #372d43;
-  color: #f3f2f4;
+  background-color: var(--fg-color);
+  color: var(--bg-color);
 }
 
 @media only screen and (max-width: 500px) {

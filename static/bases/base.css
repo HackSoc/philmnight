@@ -1,6 +1,14 @@
+:root {
+  --bg-color: #f3f2f4;
+  --fg-color: #372d43;
+
+  --selected-bg-color: #e8dafa;
+}
+
+
 body {
-  background-color: #f3f2f4;
-  color: #372d43;
+  background-color: var(--bg-color);
+  color: var(--fg-color);
   font-family: 'Inconsolata', monospace;
   margin: 0;
   overflow-x: hidden;

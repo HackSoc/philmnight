@@ -10,7 +10,7 @@ tr {
 }
 
 tr:hover {
-  background-color: #e8dafa;
+  background-color: var(--selected-bg-color);
 }
 
 th {

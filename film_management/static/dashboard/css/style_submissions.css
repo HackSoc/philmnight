@@ -3,7 +3,7 @@ h1 {
 }
 
 #film-input {
-  background-color: #e8dafa;
+  background-color: var(--selected-bg-color);
   padding: 10px 20px;
   border: none;
   border-radius: 50px;
@@ -14,7 +14,7 @@ h1 {
 #film-input:focus {
   outline: none;
   background-color: transparent;
-  box-shadow: 0 0 0 2px #372d43;
+  box-shadow: 0 0 0 2px var(--fg-color);
 }
 
 #content {
@@ -59,7 +59,7 @@ h1 {
 }
 
 #film-dropdown p:hover {
-  background-color: #e8dafa;
+  background-color: var(--selected-bg-color);
 }
 
 #film-dropdown p {
