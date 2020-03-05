@@ -35,22 +35,6 @@ h1 {
   box-shadow: 0 0 0 2px #372d43;
 }
 
-#film-submit {
-  color: inherit;
-  background-color: transparent;
-  font-family: inherit;
-  padding: 13px 30px;
-  border: none;
-  cursor: pointer;
-  transition: all linear 0.3s;
-  border-radius: 50px;
-}
-
-#film-submit:hover {
-  background-color: #372d43;
-  color: #f3f2f4;
-}
-
 #content {
   width: 100vw;
   height: 100vh;
