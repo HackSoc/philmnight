@@ -23,6 +23,18 @@ def is_filmweek():
     return iso_date[1] % 2 == 0 and iso_date[2] <= 5
 
 
+def get_phase():
+    """Return the current phase of voting."""
+    iso_date = datetime.date.today().isocalendar()
+    if iso_date[1] % 2 == 0 and iso_date[2] <= 5:
+        if iso_date[2] == 5:
+            return 'voting'
+        else:
+            return 'voting'
+    else:
+        return 'submissions'
+
+
 def get_config():
     """Return the film config. If it doesn't exist, create it."""
     try:
@@ -41,14 +53,16 @@ def reset_votes():
 @login_required
 def dashboard(request):
     """View for dashboard - split in 2 at later date."""
-    if is_filmweek():
-        if datetime.datetime.now().isocalendar()[2] == 5:
-            top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
+    film_config = get_config()
+    phase = get_phase()
+    print(phase)
 
-            return HttpResponseRedirect('/films/' + str(top_film.tmdb_id))
+    if phase == 'filmnight':
+        top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
 
-        film_config = get_config()
+        return HttpResponseRedirect('/films/' + str(top_film.tmdb_id))
 
+    if phase == 'voting':
         if (datetime.datetime.now() - film_config.last_shortlist).days > 7:
             available_films = Film.objects.filter(watched=False)
             film_config.shortlist.clear()
@@ -61,9 +75,12 @@ def dashboard(request):
             reset_votes()
 
             for _ in range(film_config.shortlist_length):
-                chosen_film = random.choice(available_films)
+                try:
+                    chosen_film = random.choice(available_films)
+                except IndexError:
+                    break
 
-                film_config.shortlist.add(chosen_film)
+                film_config.shortlist.add(chosen_film)  
                 available_films = available_films.exclude(id=chosen_film.id)
 
             film_config.save()
@@ -77,8 +94,7 @@ def dashboard(request):
             'current_votes': current_votes
         }
 
-        return render(request, 'film_management/voting.html', context)
-
+        return render(request, 'film_management/vote.html', context)
     return render(request, 'film_management/submit.html')
 
 
