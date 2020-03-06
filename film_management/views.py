@@ -128,39 +128,40 @@ def delete_film(request, tmdb_id):
 
 @login_required
 def submit_votes(request):
-    user = request.user
+    if get_phase() == 'voting':
+        user = request.user
 
-    config = get_config()
+        config = get_config()
 
-    # Clear votes from previous weeks
-    if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
-        user.profile.current_votes = ''
-        user.save()
+        # Clear votes from previous weeks
+        if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
+            user.profile.current_votes = ''
+            user.save()
 
-    success = True
-    try:
-        submitted_films = ast.literal_eval(request.body.decode('utf-8'))
-    except ValueError:
-        success = False
+        success = True
+        try:
+            submitted_films = ast.literal_eval(request.body.decode('utf-8'))
+        except ValueError:
+            success = False
 
-    if success:
-        old_votes = user.profile.current_votes.split(',')
+        if success:
+            old_votes = user.profile.current_votes.split(',')
 
-        for film in submitted_films:
-            if film not in old_votes and film != '':
-                film = Film.objects.get(tmdb_id=film)
-                if film not in config.shortlist.all():
-                    return JsonResponse({'success': False})
+            for film in submitted_films:
+                if film not in old_votes and film != '':
+                    film = Film.objects.get(tmdb_id=film)
+                    if film not in config.shortlist.all():
+                        return JsonResponse({'success': False})
 
-        for film in old_votes:
-            if film not in submitted_films and film != '':
-                film = Film.objects.get(tmdb_id=film)
-                if film not in config.shortlist.all():
-                    return JsonResponse({'success': False})
+            for film in old_votes:
+                if film not in submitted_films and film != '':
+                    film = Film.objects.get(tmdb_id=film)
+                    if film not in config.shortlist.all():
+                        return JsonResponse({'success': False})
 
-        user.profile.last_vote = datetime.datetime.now()
-        user.profile.current_votes = ','.join(submitted_films)
-        user.save()
+            user.profile.last_vote = datetime.datetime.now()
+            user.profile.current_votes = ','.join(submitted_films)
+            user.save()
 
     return JsonResponse({'success': success})
 
