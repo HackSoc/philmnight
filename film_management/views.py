@@ -17,18 +17,12 @@ from .models import Film, FilmConfig
 FILM_TIMEOUT = 10
 
 
-def is_filmweek():
-    """Return a boolean as to whether the current week is filmweek."""
-    iso_date = datetime.date.today().isocalendar()
-    return iso_date[1] % 2 == 0 and iso_date[2] <= 5
-
-
 def get_phase():
     """Return the current phase of voting."""
     iso_date = datetime.date.today().isocalendar()
     if iso_date[1] % 2 == 0 and iso_date[2] <= 5:
         if iso_date[2] == 5:
-            return 'voting'
+            return 'filmnight'
         else:
             return 'voting'
     else:
