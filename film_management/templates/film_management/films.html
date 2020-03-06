@@ -23,7 +23,7 @@
                     <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{{ film.name }}</td>
                     <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{{ film.genres|join:', ' }}</td>
                     <td onclick="window.open('/films/{{ film.tmdb_id }}','_blank')">{{ film.date_submitted }}</td>
-                    {% if user.is_superuser %}<td id="delete-button"><a href="/film_management/delete_film/{{ film.tmdb_id }}">Delete</a></td>{% endif %}
+                    {% if user.is_superuser %}<td class="delete-button"><a href="/film_management/delete_film/{{ film.tmdb_id }}">Delete</a></td>{% endif %}
                 </tr>
                 {% endfor %}
                 {% if user.is_superuser %}
