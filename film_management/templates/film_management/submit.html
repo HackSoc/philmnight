@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        {% load static %}
+        {% include 'bases/head_base.html' %}
+        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submissions.css' %}">
+        <title>Dashboard</title>
+    </head>
+    <body>
+        <div id="content">
+            <h1>Submissions are open</h1>
+            <input type="text" id="film-input" name="film_name" autocomplete="off">
+            <div id="film-dropdown">
+            </div>
+            <script>
+                document.getElementById('film-input').addEventListener("input", function () {
+                    var request = new XMLHttpRequest()
+                    request.open('POST', '/film_management/search_films/')
+                    request.setRequestHeader('X-CSRFToken', '{{ csrf_token }}')
+                    request.onreadystatechange = function () {
+                        if (request.readyState === 4) {
+                            var data = JSON.parse(request.response)['films']
+                            var dropdown = document.getElementById('film-dropdown')
+                            dropdown.innerHTML = ''
+                            for (index in data) {
+                                var film = data[index]
+                                if (film[2] !== true) {
+                                    dropdown.innerHTML += '<p><a href="/film_management/submit_film/' + film[1].toString() + '">' + film[0] + '</a></p>'
+                                } else {
+                                    dropdown.innerHTML += '<p class="strikethrough"><a>' + film[0] + '</a></p>'
+                                }
+                            }
+                        }
+                    }
+                    request.send(document.getElementById('film-input').value)
+
+                })
+            </script>
+            <p unselectable="on" id="response-message">{% if messages %}{% for message in messages %}{{ message }}{% endfor %}<script>setTimeout(function () {document.getElementById('response-message').style.opacity = '0'}, 3000)</script>{% else %}.<style>#response-message {opacity: 0;}</style>{% endif %}</p>
+            <a id="films-link" href="/films/">See all submitted films</a>
+        </div>
+    </body>
+</html>

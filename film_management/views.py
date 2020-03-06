@@ -44,11 +44,11 @@ def dashboard(request):
     if is_filmweek():
         if datetime.datetime.now().isocalendar()[2] == 5:
             top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
-            
+
             return HttpResponseRedirect('/films/' + str(top_film.tmdb_id))
 
         film_config = get_config()
-        
+
         if (datetime.datetime.now() - film_config.last_shortlist).days > 7:
             available_films = Film.objects.filter(watched=False)
             film_config.shortlist.clear()
@@ -60,7 +60,7 @@ def dashboard(request):
 
             reset_votes()
 
-            for i in range(film_config.shortlist_length):
+            for _ in range(film_config.shortlist_length):
                 chosen_film = random.choice(available_films)
 
                 film_config.shortlist.add(chosen_film)
@@ -72,9 +72,14 @@ def dashboard(request):
         if current_votes == ['']:
             current_votes = []
 
-        return render(request, 'film_management/dashboard.html', {'is_filmweek': True, 'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all(), 'current_votes': current_votes})
+        context = {
+            'shortlisted_films': FilmConfig.objects.all()[0].shortlist.all(),
+            'current_votes': current_votes
+        }
 
-    return render(request, 'film_management/dashboard.html', {'is_filmweek': False})
+        return render(request, 'film_management/voting.html', context)
+
+    return render(request, 'film_management/submit.html')
 
 
 @login_required
@@ -83,7 +88,11 @@ def submit_film(request, tmdb_id):
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
-            messages.add_message(request, messages.ERROR, 'You are doing that too fast. Try again in ' + str(FILM_TIMEOUT-last_submit_delta) + ' seconds')
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'You are doing that too fast. Try again in ' + str(FILM_TIMEOUT-last_submit_delta) + ' seconds'
+            )
             return HttpResponseRedirect('/dashboard/')
     except IndexError:
         pass
@@ -99,7 +108,7 @@ def submit_film(request, tmdb_id):
 @login_required
 def film(request, tmdb_id):
     film = Film.objects.get(tmdb_id=tmdb_id)
-    return render(request, 'film_management/film.html', { 'film': film })
+    return render(request, 'film_management/film.html', {'film': film})
 
 @user_passes_test(lambda u: u.is_superuser)
 def delete_film(request, tmdb_id):

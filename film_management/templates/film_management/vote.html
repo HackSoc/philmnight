@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        {% load static %}
+        {% include 'bases/head_base.html' %}
+        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_voting.css' %}">
+        <title>Dashboard</title>
+    </head>
+    <body>
+        <div id="content">
+            <h1>Voting is open</h1>
+                <div id="films">
+                    {% for film in shortlisted_films %}
+                        <div class="film" onclick="updateFilm(this)" data-identifier="{{ film.tmdb_id }}">
+                            <p>{{ film.name }}{% if user.is_superuser %} | {{ film.votes }}{% endif %}</p>
+                            <img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
+                        </div>
+                    {% endfor %}
+                </div>
+                <script>
+                var checkedFilms = {{ current_votes|safe }}
+
+                function updateFilm (element) {
+                    if (!element.classList.contains('selected')) {
+                        element.classList.add('selected')
+                        checkedFilms.push(element.getAttribute("data-identifier"))
+                        {% if user.is_superuser %}
+                        var count = parseInt(element.children[0].innerHTML.split('|')[1])
+                        count += 1
+                        element.children[0].innerHTML = element.children[0].innerHTML.split('|')[0] + '| ' + count.toString()
+                        {% endif %}
+                    } else {
+                        element.classList.remove('selected')
+                        checkedFilms.splice(checkedFilms.indexOf(element.getAttribute("data-identifier")))
+                        {% if user.is_superuser %}
+                        var count = parseInt(element.children[0].innerHTML.split('|')[1])
+                        count -= 1
+                        element.children[0].innerHTML = element.children[0].innerHTML.split('|')[0] + '| ' + count.toString()
+                        {% endif %}
+                    }
+                    var voteRequest = new XMLHttpRequest()
+                    voteRequest.open('POST', '/film_management/submit_votes/')
+                    voteRequest.setRequestHeader('X-CSRFToken', '{{ csrf_token }}')
+                    voteRequest.send(JSON.stringify(checkedFilms))
+                }
+
+                for (var i=0; i<checkedFilms.length; i++) {
+                    var element = document.querySelector('[data-identifier="'+checkedFilms[i]+'"]')
+                    element.classList.add('selected')
+                }
+                </script>
+                <a id="films-link" href="/films/">See all submitted films</a>
+        </div>
+    </body>
+</html>
