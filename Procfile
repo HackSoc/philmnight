@@ -1,1 +1,1 @@
-web: gunicorn hacksoc_filmnight.wsgi
+web: gunicorn philmnight.wsgi
