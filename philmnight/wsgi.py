@@ -1,5 +1,5 @@
 """
-WSGI config for hacksoc_filmnight project.
+WSGI config for philmnight project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hacksoc_filmnight.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'philmnight.settings')
 
 application = get_wsgi_application()

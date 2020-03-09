@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.utils import IntegrityError
 
-from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
+from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 from .models import Film, FilmConfig
 
 FILM_TIMEOUT = 10

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from hacksoc_filmnight.settings import TMDB_ENDPOINT, TMDB_KEY
+from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
 
 # pylint: disable=too-many-instance-attributes
@@ -93,9 +93,13 @@ class Film(models.Model):
 class FilmConfig(models.Model):
     """Dynamic settings regarding how the shortlist works."""
 
+    name = models.CharField(max_length=80, default='Philmnight')
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
+
+    def __str__(self):
+        return self.name
 
     # pylint: disable=unused-argument
     def clean(self, *args, **kwargs):
