@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import django_heroku
 
-FILMNIGHT_NAME = 'Philmnight'
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-if not 'DYNO' in os.environ:
+if 'DYNO' not in os.environ:
     from dotenv import load_dotenv
     load_dotenv()
 
@@ -124,7 +122,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=['york.ac.uk']
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['york.ac.uk']
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/dashboard/'
 
@@ -163,4 +161,3 @@ if 'DYNO' in os.environ:
     SECURE_SSL_REDIRECT = True
     DEBUG = False
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-

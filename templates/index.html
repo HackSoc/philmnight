@@ -2,18 +2,19 @@
 <html lang="en">
     <head>
         {% load static %}
+        {% load philmnight_tags %}
         {% include 'bases/head_base.html' %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
         <script src="https://apis.google.com/js/platform.js" async defer></script>
         <meta name="google-signin-client_id" content="{{ GOOGLE_OAUTH_KEY }}">
-        <title>HackSoc Filmnight</title>
+        <title>{% filmnight_name %}</title>
     </head>
     <body>
         <div id="content">
             <div id="header-card">
                 <img id="logo" src="{% static 'images/logo.svg' %}">
                 <div id="header-text">
-                    <h1>HackSoc</h1>
+                    <h1>{% filmnight_name %}</h1>
                     <h2>Film Night Portal</h2>
                 </div>
             </div>

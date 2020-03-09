@@ -98,6 +98,9 @@ class FilmConfig(models.Model):
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
 
+    def __str__(self):
+        return self.name
+
     # pylint: disable=unused-argument
     def clean(self, *args, **kwargs):
         """Override clean function so shortlist can't be overpopulated."""
