@@ -94,6 +94,7 @@ class FilmConfig(models.Model):
     """Dynamic settings regarding how the shortlist works."""
 
     name = models.CharField(max_length=80, default='Philmnight')
+    logo = models.ImageField(upload_to='logo/', default='logo/default.png')
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()

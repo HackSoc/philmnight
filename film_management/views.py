@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, OperationalError
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 from .models import Film, FilmConfig
@@ -35,6 +35,8 @@ def get_config():
         return FilmConfig.objects.all()[0]
     except IndexError:
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
+    except OperationalError:
+        return False
 
 
 def reset_votes():

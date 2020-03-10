@@ -156,6 +156,11 @@ STATICFILES_DIRS = [
 
 LOGIN_URL = '/'
 
+# Media
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 if 'DYNO' in os.environ:
     django_heroku.settings(locals())
     SECURE_SSL_REDIRECT = True

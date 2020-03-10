@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
 
 from film_management import views as fm_views
-from . import views
+from . import views, settings
+
 
 urlpatterns = [
     path('', views.index),
@@ -29,3 +31,6 @@ urlpatterns = [
     path('films/<str:tmdb_id>', fm_views.film),
     path('logout/', views.logout_view)
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
