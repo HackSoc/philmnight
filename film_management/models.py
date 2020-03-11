@@ -2,12 +2,14 @@
 
 import datetime
 import requests
+from PIL import Image
 
 from django.db import models
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.files.base import ContentFile
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
@@ -95,6 +97,7 @@ class FilmConfig(models.Model):
 
     name = models.CharField(max_length=80, default='Philmnight')
     logo = models.ImageField(upload_to='logo/', default='logo/default.png')
+    logo_favicon = models.ImageField(upload_to='logo/', blank=True, null=True)
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
@@ -112,6 +115,14 @@ class FilmConfig(models.Model):
     def save(self, *args, **kwargs):
         try:
             self.id = 1
+
+            image = Image.open(self.logo)
+            image.save('media/logo/logo.png', format='png')
+            image = image.resize((32, 32), Image.ANTIALIAS)
+            image.save('media/logo/favicon.png', format='png')
+            self.logo_favicon = 'media/logo/favicon.png'
+            self.logo = 'media/logo/logo.png'
+
             super(FilmConfig, self).save(*args, **kwargs)
         except IntegrityError:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
