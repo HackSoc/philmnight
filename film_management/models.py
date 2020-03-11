@@ -120,8 +120,8 @@ class FilmConfig(models.Model):
             image.save('media/logo/logo.png', format='png')
             image = image.resize((32, 32), Image.ANTIALIAS)
             image.save('media/logo/favicon.png', format='png')
-            self.logo_favicon = 'media/logo/favicon.png'
-            self.logo = 'media/logo/logo.png'
+            self.logo_favicon = 'logo/favicon.png'
+            self.logo = 'logo/logo.png'
 
             super(FilmConfig, self).save(*args, **kwargs)
         except IntegrityError:
