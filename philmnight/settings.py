@@ -164,5 +164,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if 'DYNO' in os.environ:
     django_heroku.settings(locals())
     SECURE_SSL_REDIRECT = True
-    DEBUG = False
+    DEBUG = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
