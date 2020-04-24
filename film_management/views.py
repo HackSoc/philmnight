@@ -1,8 +1,8 @@
 """Views for film management."""
-import datetime
 import random
 import ast
 import requests
+import datetime
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.utils import IntegrityError, OperationalError
+from django.utils import timezone
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 from .models import Film, FilmConfig
@@ -19,9 +20,9 @@ FILM_TIMEOUT = 10
 
 def get_phase():
     """Return the current phase of voting."""
-    iso_date = datetime.date.today().isocalendar()
+    iso_date = timezone.now().isocalendar()
     if iso_date[1] % 2 == 1 and iso_date[2] == 5:
-        if datetime.datetime.now().hour >= 7:
+        if timezone.now().hour >= 7:
             return 'filmnight'
         else:
             return 'voting'
