@@ -20,13 +20,12 @@ FILM_TIMEOUT = 10
 def get_phase():
     """Return the current phase of voting."""
     iso_date = datetime.date.today().isocalendar()
-    if iso_date[1] % 2 == 0 and iso_date[2] <= 5:
-        if iso_date[2] == 5:
+    if iso_date[1] % 2 == 0 and iso_date[2] == 5:
+        if datetime.datetime.now().hour >= 7:
             return 'filmnight'
         else:
             return 'voting'
-    else:
-        return 'submissions'
+    return 'submissions'
 
 
 def get_config():
