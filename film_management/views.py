@@ -1,8 +1,8 @@
 """Views for film management."""
 import random
 import ast
-import requests
 import datetime
+import requests
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -24,8 +24,7 @@ def get_phase():
     if iso_date[1] % 2 == 1 and iso_date[2] == 5:
         if timezone.now().hour >= 7:
             return 'filmnight'
-        else:
-            return 'voting'
+        return 'voting'
     return 'submissions'
 
 
@@ -76,7 +75,7 @@ def dashboard(request):
                 except IndexError:
                     break
 
-                film_config.shortlist.add(chosen_film)  
+                film_config.shortlist.add(chosen_film)
                 available_films = available_films.exclude(id=chosen_film.id)
 
             film_config.save()
