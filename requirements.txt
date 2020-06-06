@@ -1,6 +1,6 @@
 django_heroku==0.3.1
 requests==2.22.0
-Django==2.2.2
+Django==2.2.13
 python-dotenv==0.12.0
 gunicorn
 requests_oauthlib
