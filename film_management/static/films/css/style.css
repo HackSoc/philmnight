@@ -9,7 +9,7 @@ tr {
   height: 50px;
 }
 
-tr:hover {
+tr:hover:not(:first-child) {
   background-color: var(--selected-bg-color);
 }
 

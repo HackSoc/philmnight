@@ -1,7 +1,7 @@
-django_heroku==0.3.1
-requests==2.22.0
-Django==2.2.2
-python-dotenv==0.12.0
+django_heroku
+requests
+Django
+python-dotenv
 gunicorn
 requests_oauthlib
 social-auth-app-django

@@ -21,6 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
+# Detect heroku
 if 'DYNO' not in os.environ:
     from dotenv import load_dotenv
     load_dotenv()
@@ -34,11 +35,11 @@ try:
     TMDB_ENDPOINT = os.environ['TMDB_ENDPOINT']
     TMDB_KEY = os.environ['TMDB_KEY']
 
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = os.environ['DEBUG']
 except KeyError:
     raise KeyError('Not all required environment variables present')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

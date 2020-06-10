@@ -25,3 +25,5 @@ tags
 .env
 
 db.sqlite3
+
+media/
