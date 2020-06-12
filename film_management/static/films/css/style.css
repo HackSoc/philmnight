@@ -1,3 +1,8 @@
+h1 {
+  margin: 20px;
+  text-align: center;
+}
+
 table {
   width: 100%;
   text-align: left;
@@ -9,7 +14,7 @@ tr {
   height: 50px;
 }
 
-tr:hover {
+tr:hover:not(:first-child) {
   background-color: var(--selected-bg-color);
 }
 

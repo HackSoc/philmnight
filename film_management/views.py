@@ -94,7 +94,8 @@ def dashboard(request):
 
 
 @login_required
-def submit_film(request, tmdb_id):
+def submit_film(request, tmdb_id): # TODO: Change to use POST instead of GET
+    """Submit the provided film ID to the filmnight database."""
     try:
         last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
@@ -116,16 +117,19 @@ def submit_film(request, tmdb_id):
 
     return HttpResponseRedirect('/dashboard/')
 
+
 @login_required
 def film(request, tmdb_id):
     film = Film.objects.get(tmdb_id=tmdb_id)
     return render(request, 'film_management/film.html', {'film': film})
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def delete_film(request, tmdb_id):
     film = Film.objects.get(tmdb_id=tmdb_id)
     film.delete()
     return HttpResponseRedirect('/films/')
+
 
 @login_required
 def submit_votes(request):
