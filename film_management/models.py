@@ -20,11 +20,13 @@ class Film(models.Model):
 
     tmdb_id = models.IntegerField(default=1, null=True, unique=True)
 
+    score = models.DecimalField(default=-1, null=True, decimal_places=1, max_digits=3)
     name = models.CharField(max_length=70, blank=False)
     description = models.TextField(default='', null=True)
     tagline = models.TextField(default='', null=True)
     watched = models.BooleanField(default=False)
     _genres = models.TextField(default='', null=True)
+
     @property
     def genres(self):
         """Return film genres as a list."""
@@ -39,7 +41,7 @@ class Film(models.Model):
             films = user.profile.current_votes.split(',')
             if str(self.tmdb_id) in films:
                 vote_count += 1
-        return vote_count
+            return vote_count
 
     @property
     def voters(self):
@@ -76,12 +78,14 @@ class Film(models.Model):
         request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
         film_info = requests.get(request_path).json()
 
+        print(request_path)
+
+        self.score = film_info.get('vote_average', -1)
         self.name = film_info.get('title', 'Unknown')
         self.description = film_info.get('overview', 'No description available')
         self.poster_path = film_info.get('poster_path', '')
         self.backdrop_path = film_info.get('backdrop_path', '')
         self.tagline = film_info.get('tagline', '')
-        self.tmdb_id = film_info['id']
         self._genres = ','.join([genre['name'] for genre in film_info['genres']])
 
         release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
