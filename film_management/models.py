@@ -9,7 +9,6 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.files.base import ContentFile
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
@@ -67,7 +66,7 @@ class Film(models.Model):
         """Return a string representation of the model."""
         return self.name
 
-    # pylint: disable=arguments-differ
+    # pylint: disable=signature-differs
     def save(self, *args, **kwargs):
         """
         Override save argument of film model.
@@ -90,7 +89,9 @@ class Film(models.Model):
 
         release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
         if datetime.datetime.now() < release_date:
-            raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
+            raise IntegrityError(self.name + ' has not been released yet. Released: ' +
+                                 str(release_date) + '\nUnprocessed: ' +
+                                 film_info['release_date'])
         self.release_date = release_date
 
         super(Film, self).save(*args, **kwargs)
@@ -107,18 +108,20 @@ class FilmConfig(models.Model):
     last_shortlist = models.DateTimeField()
 
     def __str__(self):
+        """Return string representation of film config."""
         return self.name
 
-    # pylint: disable=unused-argument
+    # pylint: disable=signature-differs
     def clean(self, *args, **kwargs):
         """Override clean function so shortlist can't be overpopulated."""
         if self.shortlist.count() > self.shortlist_length:
             raise ValueError('Shortlist length exceeds max')
 
-    # pylint: disable=unused-argument
+    # pylint: disable=signature-differs
     def save(self, *args, **kwargs):
+        """Override save method of config to automatically resize images."""
         try:
-            self.id = 1
+            self.id = 1  # pylint: disable=all
 
             image = Image.open(self.logo)
             image.save('media/logo/logo.png', format='png')
@@ -140,6 +143,7 @@ class Profile(models.Model):
     last_vote = models.DateTimeField(default=datetime.datetime.min)
 
     def save(self, *args, **kwargs):
+        """Override default save method in order to clean up votes."""
         current_votes = self.current_votes.split(',')
         for item in current_votes:
             if item == '':
@@ -151,11 +155,14 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    """Create profile when user created."""
     if created:
         Profile.objects.create(user=instance)
 
+
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
+    """Save profile when user saved."""
     try:
         instance.profile.save()
     except AttributeError:

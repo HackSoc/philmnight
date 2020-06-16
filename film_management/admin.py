@@ -1,3 +1,4 @@
+"""Admin module for films."""
 from django.contrib import admin
 
 from .models import Film, FilmConfig, Profile

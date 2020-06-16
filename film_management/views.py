@@ -93,11 +93,11 @@ def dashboard(request):
 
 
 @login_required
-def submit_film(request, tmdb_id):  # TODO: Change to use POST instead of GET
+def submit_film(request, tmdb_id):
     """Submit the provided film ID to the filmnight database."""
     try:
-        last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
-        last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
+        last_submission = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
+        last_submit_delta = (datetime.datetime.now()-last_submission.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
             messages.add_message(
                 request,
