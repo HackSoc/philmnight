@@ -1,4 +1,4 @@
-"""philmnight URL Configuration
+"""philmnight URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.2/topics/http/urls/
@@ -24,6 +24,7 @@ from . import views, settings
 urlpatterns = [
     path('', views.index),
     path('', include('social_django.urls', namespace='social')),
+    path('config/', views.config, name='config'),
     path('admin/', admin.site.urls),
     path('film_management/', include('film_management.urls')),
     path('dashboard/', fm_views.dashboard),

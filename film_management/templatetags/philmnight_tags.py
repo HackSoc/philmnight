@@ -5,24 +5,27 @@ from django.utils.safestring import mark_safe
 from film_management.views import get_config
 
 register = template.Library()
+FILM_CONFIG = get_config()
 
 
 @register.simple_tag
-def filmnight_name():
+def philmnight_name():
     """Return the name of the philmnight app."""
-    config = get_config()
-    return config.name
+    return FILM_CONFIG.name
 
 
 @register.simple_tag
-def filmnight_logo():
-    """Return branding of the philmnight app."""
-    config = get_config()
-    return mark_safe('<img id="logo" src="' + config.logo.url + '">')
+def philmnight_logo():
+    """Return logo of the philmnight app."""
+    return mark_safe('<img id="logo" src="' + FILM_CONFIG.logo.url + '">')
 
 
 @register.simple_tag
-def filmnight_favicon():
-    """Return branding of the philmnight app in favicon dimensions."""
-    config = get_config()
-    return mark_safe('<link rel="icon" type="image/png" href="' + config.logo.url + '">')
+def philmnight_favicon():
+    """Return logo of the philmnight app in favicon dimensions."""
+    return mark_safe('<link rel="icon" type="image/png" href="' + FILM_CONFIG.logo.url + '">')
+
+
+def philmnight_stylesheet():
+    """Return ."""
+    return False

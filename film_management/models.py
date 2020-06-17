@@ -101,11 +101,12 @@ class FilmConfig(models.Model):
     """Dynamic settings regarding how the shortlist works."""
 
     name = models.CharField(max_length=80, default='Philmnight')
-    logo = models.ImageField(upload_to='logo/', default='logo/default.png')
+    logo = models.ImageField(upload_to='config/', default='logo/default.png')
     logo_favicon = models.ImageField(upload_to='logo/', blank=True, null=True)
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
+    stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')
 
     def __str__(self):
         """Return string representation of film config."""
@@ -120,19 +121,19 @@ class FilmConfig(models.Model):
     # pylint: disable=signature-differs
     def save(self, *args, **kwargs):
         """Override save method of config to automatically resize images."""
-        try:
-            self.id = 1  # pylint: disable=all
-
-            image = Image.open(self.logo)
-            image.save('media/logo/logo.png', format='png')
-            image = image.resize((32, 32), Image.ANTIALIAS)
-            image.save('media/logo/favicon.png', format='png')
-            self.logo_favicon = 'logo/favicon.png'
-            self.logo = 'logo/logo.png'
-
-            super(FilmConfig, self).save(*args, **kwargs)
-        except IntegrityError:
+        if FilmConfig.objects.exists(id=1) and self.id != 1:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
+
+        self.id = 1  # pylint: disable=all
+
+        image = Image.open(self.logo)
+        image.save('media/logo/logo.png', format='png')
+        image = image.resize((32, 32), Image.ANTIALIAS)
+        image.save('media/logo/favicon.png', format='png')
+        self.logo_favicon = 'logo/favicon.png'
+        self.logo = 'logo/logo.png'
+
+        super(FilmConfig, self).save(*args, **kwargs)
 
 
 class Profile(models.Model):
