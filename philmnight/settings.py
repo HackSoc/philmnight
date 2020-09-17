@@ -144,12 +144,14 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+STATIC_ROOT = os.environ['STATIC_ROOT']
+
 LOGIN_URL = '/'
 
 # Media
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.environ['MEDIA_ROOT']
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
