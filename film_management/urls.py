@@ -1,3 +1,4 @@
+"""URL paths for film_management views."""
 from django.urls import path
 from . import views
 
@@ -10,5 +11,3 @@ urlpatterns = [
     path('delete_film/<str:tmdb_id>', views.delete_film),
     path('control_panel/', views.control_panel)
 ]
-
-

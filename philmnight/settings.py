@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-import django_heroku
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,29 +21,26 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+load_dotenv()
 
-# Detect heroku
-if 'DYNO' not in os.environ:
-    from dotenv import load_dotenv
-    load_dotenv()
+SECRET_KEY = os.environ['SECRET_KEY']
+ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(',')
 
-try:
-    SECRET_KEY = os.environ['SECRET_KEY']
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ['GOOGLE_OAUTH_KEY']
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ['GOOGLE_OAUTH_SECRET']
 
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ['GOOGLE_OAUTH_KEY']
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ['GOOGLE_OAUTH_SECRET']
+TMDB_ENDPOINT = os.environ['TMDB_ENDPOINT']
+TMDB_KEY = os.environ['TMDB_KEY']
 
-    TMDB_ENDPOINT = os.environ['TMDB_ENDPOINT']
-    TMDB_KEY = os.environ['TMDB_KEY']
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ['DEBUG'] == 'True'
 
-    # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = os.environ['DEBUG']
-except KeyError:
-    raise KeyError('Not all required environment variables present')
+STATIC_ROOT = os.environ['STATIC_ROOT']
+MEDIA_ROOT = os.environ['MEDIA_ROOT']
 
-
-ALLOWED_HOSTS = ['*']
-
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Application definition
 
@@ -137,14 +135,13 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = False
 
+TIME_ZONE = 'Europe/London'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -155,15 +152,13 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+
 LOGIN_URL = '/'
 
 # Media
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-if 'DYNO' in os.environ:
-    django_heroku.settings(locals())
+if not DEBUG:
     SECURE_SSL_REDIRECT = True
-    DEBUG = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

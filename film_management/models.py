@@ -9,7 +9,6 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.files.base import ContentFile
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
@@ -20,11 +19,13 @@ class Film(models.Model):
 
     tmdb_id = models.IntegerField(default=1, null=True, unique=True)
 
+    score = models.DecimalField(default=-1, null=True, decimal_places=1, max_digits=3)
     name = models.CharField(max_length=70, blank=False)
     description = models.TextField(default='', null=True)
     tagline = models.TextField(default='', null=True)
     watched = models.BooleanField(default=False)
     _genres = models.TextField(default='', null=True)
+
     @property
     def genres(self):
         """Return film genres as a list."""
@@ -39,7 +40,7 @@ class Film(models.Model):
             films = user.profile.current_votes.split(',')
             if str(self.tmdb_id) in films:
                 vote_count += 1
-        return vote_count
+            return vote_count
 
     @property
     def voters(self):
@@ -65,7 +66,7 @@ class Film(models.Model):
         """Return a string representation of the model."""
         return self.name
 
-    # pylint: disable=arguments-differ
+    # pylint: disable=signature-differs
     def save(self, *args, **kwargs):
         """
         Override save argument of film model.
@@ -76,17 +77,21 @@ class Film(models.Model):
         request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
         film_info = requests.get(request_path).json()
 
+        print(request_path)
+
+        self.score = film_info.get('vote_average', -1)
         self.name = film_info.get('title', 'Unknown')
         self.description = film_info.get('overview', 'No description available')
         self.poster_path = film_info.get('poster_path', '')
         self.backdrop_path = film_info.get('backdrop_path', '')
         self.tagline = film_info.get('tagline', '')
-        self.tmdb_id = film_info['id']
         self._genres = ','.join([genre['name'] for genre in film_info['genres']])
 
         release_date = datetime.datetime.strptime(film_info['release_date'], '%Y-%m-%d')
         if datetime.datetime.now() < release_date:
-            raise IntegrityError(self.name + ' has not been released yet. Released: ' + str(release_date) + '\nUnprocessed: ' + film_info['release_date'])
+            raise IntegrityError(self.name + ' has not been released yet. Released: ' +
+                                 str(release_date) + '\nUnprocessed: ' +
+                                 film_info['release_date'])
         self.release_date = release_date
 
         super(Film, self).save(*args, **kwargs)
@@ -96,36 +101,39 @@ class FilmConfig(models.Model):
     """Dynamic settings regarding how the shortlist works."""
 
     name = models.CharField(max_length=80, default='Philmnight')
-    logo = models.ImageField(upload_to='logo/', default='logo/default.png')
+    logo = models.ImageField(upload_to='config/', default='logo/default.png')
     logo_favicon = models.ImageField(upload_to='logo/', blank=True, null=True)
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
+    stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')
 
     def __str__(self):
+        """Return string representation of film config."""
         return self.name
 
-    # pylint: disable=unused-argument
+    # pylint: disable=signature-differs
     def clean(self, *args, **kwargs):
         """Override clean function so shortlist can't be overpopulated."""
         if self.shortlist.count() > self.shortlist_length:
             raise ValueError('Shortlist length exceeds max')
 
-    # pylint: disable=unused-argument
+    # pylint: disable=signature-differs
     def save(self, *args, **kwargs):
-        try:
-            self.id = 1
-
-            image = Image.open(self.logo)
-            image.save('media/logo/logo.png', format='png')
-            image = image.resize((32, 32), Image.ANTIALIAS)
-            image.save('media/logo/favicon.png', format='png')
-            self.logo_favicon = 'logo/favicon.png'
-            self.logo = 'logo/logo.png'
-
-            super(FilmConfig, self).save(*args, **kwargs)
-        except IntegrityError:
+        """Override save method of config to automatically resize images."""
+        if FilmConfig.objects.exists(id=1) and self.id != 1:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
+
+        self.id = 1  # pylint: disable=all
+
+        image = Image.open(self.logo)
+        image.save('media/logo/logo.png', format='png')
+        image = image.resize((32, 32), Image.ANTIALIAS)
+        image.save('media/logo/favicon.png', format='png')
+        self.logo_favicon = 'logo/favicon.png'
+        self.logo = 'logo/logo.png'
+
+        super(FilmConfig, self).save(*args, **kwargs)
 
 
 class Profile(models.Model):
@@ -136,6 +144,7 @@ class Profile(models.Model):
     last_vote = models.DateTimeField(default=datetime.datetime.min)
 
     def save(self, *args, **kwargs):
+        """Override default save method in order to clean up votes."""
         current_votes = self.current_votes.split(',')
         for item in current_votes:
             if item == '':
@@ -147,11 +156,14 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    """Create profile when user created."""
     if created:
         Profile.objects.create(user=instance)
 
+
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
+    """Save profile when user saved."""
     try:
         instance.profile.save()
     except AttributeError:

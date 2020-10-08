@@ -1,7 +1,11 @@
 [MASTER]
 
-load-plugins=pylint_django
-
-max-line-length=120
+load-plugins=pylint_django,pylint_quotes
 
 [MESSAGES CONTROL]
+
+string-quote=single
+triple-quote=double
+docstring-quote=double
+
+ignored-argument-names=arg|args|kwargs

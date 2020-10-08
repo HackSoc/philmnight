@@ -50,7 +50,6 @@ def dashboard(request):
     """View for dashboard - split in 2 at later date."""
     film_config = get_config()
     phase = get_phase()
-    print(phase)
 
     if phase == 'filmnight':
         top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
@@ -63,7 +62,8 @@ def dashboard(request):
             film_config.shortlist.clear()
             film_config.last_shortlist = datetime.datetime.now()
 
-            top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
+            top_film = max([[film, film.votes] for film in Film.objects.all()],
+                           key=lambda x: x[1])[0]
             top_film.watched = True
             top_film.save()
 
@@ -94,11 +94,11 @@ def dashboard(request):
 
 
 @login_required
-def submit_film(request, tmdb_id): # TODO: Change to use POST instead of GET
+def submit_film(request, tmdb_id):
     """Submit the provided film ID to the filmnight database."""
     try:
-        last_user_film = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
-        last_submit_delta = (datetime.datetime.now()-last_user_film.date_submitted).seconds
+        last_submission = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
+        last_submit_delta = (datetime.datetime.now()-last_submission.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
             messages.add_message(
                 request,
@@ -120,8 +120,9 @@ def submit_film(request, tmdb_id): # TODO: Change to use POST instead of GET
 
 @login_required
 def film(request, tmdb_id):
-    film = Film.objects.get(tmdb_id=tmdb_id)
-    return render(request, 'film_management/film.html', {'film': film})
+    """Render information about a chosen film."""
+    chosen_film = Film.objects.get(tmdb_id=tmdb_id)
+    return render(request, 'film_management/film.html', {'film': chosen_film})
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -182,7 +183,7 @@ def search_films(request):
 
     if current_string != '':
         request_path = (TMDB_ENDPOINT + 'search/movie?query=' + current_string +
-            '&api_key=' + TMDB_KEY)
+                        '&api_key=' + TMDB_KEY)
         response = requests.get(request_path).json()['results']
         films = []
 
@@ -192,8 +193,11 @@ def search_films(request):
             except IndexError:
                 break
             if not Film.objects.filter(tmdb_id=film['id']).exists():
-                if datetime.datetime.now() < datetime.datetime.strptime(film['release_date'], '%Y-%m-%d'):
-                    films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], True])
+                if film['release_date'] != '':
+                    if datetime.datetime.now() < datetime.datetime.strptime(film['release_date'], '%Y-%m-%d'):
+                        films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], True])
+                    else:
+                        films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], False])
                 else:
                     films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], False])
             else:
