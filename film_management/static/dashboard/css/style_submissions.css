@@ -2,6 +2,10 @@ h1 {
   margin-bottom: 20px;
 }
 
+#film-input-label {
+  margin-bottom: 10px;
+}
+
 #film-input {
   background-color: var(--selected-bg-color);
   padding: 10px 20px;

@@ -3,12 +3,13 @@
     <head>
         {% load static %}
         {% include 'bases/head_base.html' %}
-        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submissions.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/style_submissions.css' %}?v=1">
         <title>Dashboard</title>
     </head>
     <body>
         <div id="content">
             <h1>Submissions are open</h1>
+            <label for="film-input" id="film-input-label">Enter a film in the box below:</label>
             <input type="text" id="film-input" name="film_name" autocomplete="off">
             <div id="film-dropdown">
             </div>
