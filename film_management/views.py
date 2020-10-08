@@ -34,8 +34,6 @@ def get_config():
         return FilmConfig.objects.all()[0]
     except IndexError:
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
-    except OperationalError:
-        return False
 
 
 def reset_votes():
