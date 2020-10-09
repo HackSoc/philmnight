@@ -12,7 +12,7 @@
                 <div id="films">
                     {% for film in shortlisted_films %}
                         <div class="film" onclick="updateFilm(this)" data-identifier="{{ film.tmdb_id }}">
-                            <p>{{ film.name }}{% if user.is_superuser %} | {{ film.votes }}{% endif %}</p>
+                            <p>{{ film.name }} | {{ film.votes }}</p>
                             <img class="film-image" src="{% if film.poster_path != '' %}https://image.tmdb.org/t/p/w200{{ film.poster_path }}{% else %}/static/images/placeholder_film.png{% endif %}">
                         </div>
                     {% endfor %}
