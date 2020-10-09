@@ -121,7 +121,7 @@ class FilmConfig(models.Model):
     # pylint: disable=signature-differs
     def save(self, *args, **kwargs):
         """Override save method of config to automatically resize images."""
-        if FilmConfig.objects.exists(id=1) and self.id != 1:
+        if FilmConfig.objects.filter(id=1).exists() and self.id != 1:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
 
         self.id = 1  # pylint: disable=all
