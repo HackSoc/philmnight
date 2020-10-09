@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, OperationalError
 from django.utils import timezone
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
@@ -22,7 +22,7 @@ def get_phase():
     """Return the current phase of voting."""
     iso_date = timezone.now().isocalendar()
     if iso_date[1] % 2 == 1 and iso_date[2] == 5:
-        if timezone.now().hour >= 7:
+        if timezone.now().hour >= 17:
             return 'filmnight'
         return 'voting'
     return 'submissions'
@@ -34,6 +34,9 @@ def get_config():
         return FilmConfig.objects.all()[0]
     except IndexError:
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
+    except OperationalError as e:
+        print('Error supressed to allow for migrations:\nError:'+str(e))
+
 
 
 def reset_votes():
