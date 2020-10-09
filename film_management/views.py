@@ -38,7 +38,6 @@ def get_config():
         print('Error supressed to allow for migrations:\nError:'+str(e))
 
 
-
 def reset_votes():
     """Reset all votes for every film to 0."""
     for user in User.objects.all():
@@ -173,6 +172,7 @@ def submit_votes(request):
 
             user.profile.last_vote = datetime.datetime.now()
             user.profile.current_votes = ','.join(submitted_films)
+            print(user.profile.current_votes)
             user.save()
 
     return JsonResponse({'success': success})

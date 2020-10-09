@@ -40,7 +40,7 @@ class Film(models.Model):
             films = user.profile.current_votes.split(',')
             if str(self.tmdb_id) in films:
                 vote_count += 1
-            return vote_count
+        return vote_count
 
     @property
     def voters(self):
