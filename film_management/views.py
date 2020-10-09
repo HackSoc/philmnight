@@ -22,7 +22,7 @@ def get_phase():
     """Return the current phase of voting."""
     iso_date = timezone.now().isocalendar()
     if iso_date[1] % 2 == 1 and iso_date[2] == 5:
-        if timezone.now().hour >= 7:
+        if timezone.now().hour >= 17:
             return 'filmnight'
         return 'voting'
     return 'submissions'
@@ -34,6 +34,9 @@ def get_config():
         return FilmConfig.objects.all()[0]
     except IndexError:
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
+    except OperationalError as e:
+        print('Error supressed to allow for migrations:\nError:'+str(e))
+
 
 
 def reset_votes():
@@ -95,13 +98,16 @@ def dashboard(request):
 def submit_film(request, tmdb_id):
     """Submit the provided film ID to the filmnight database."""
     try:
-        last_submission = Film.objects.filter(submitting_user=request.user).order_by('-date_submitted')[0]
+        last_submission = Film.objects.filter(
+            submitting_user=request.user
+        ).order_by('-date_submitted')[0]
         last_submit_delta = (datetime.datetime.now()-last_submission.date_submitted).seconds
         if last_submit_delta < FILM_TIMEOUT:
             messages.add_message(
                 request,
                 messages.ERROR,
-                'You are doing that too fast. Try again in ' + str(FILM_TIMEOUT-last_submit_delta) + ' seconds'
+                f'You\'re doing that too fast. Try again in {FILM_TIMEOUT-last_submit_delta}'
+                ' seconds'
             )
             return HttpResponseRedirect('/dashboard/')
     except IndexError:
@@ -125,13 +131,15 @@ def film(request, tmdb_id):
 
 @user_passes_test(lambda u: u.is_superuser)
 def delete_film(request, tmdb_id):
-    film = Film.objects.get(tmdb_id=tmdb_id)
-    film.delete()
+    """Delete a given film. Superusers only."""
+    chosen_film = Film.objects.get(tmdb_id=tmdb_id)
+    chosen_film.delete()
     return HttpResponseRedirect('/films/')
 
 
 @login_required
 def submit_votes(request):
+    """Submit a vote on a film."""
     if get_phase() == 'voting':
         user = request.user
 
@@ -151,16 +159,16 @@ def submit_votes(request):
         if success:
             old_votes = user.profile.current_votes.split(',')
 
-            for film in submitted_films:
-                if film not in old_votes and film != '':
-                    film = Film.objects.get(tmdb_id=film)
-                    if film not in config.shortlist.all():
+            for current_film in submitted_films:
+                if current_film not in old_votes and current_film != '':
+                    current_film = Film.objects.get(tmdb_id=current_film)
+                    if current_film not in config.shortlist.all():
                         return JsonResponse({'success': False})
 
-            for film in old_votes:
-                if film not in submitted_films and film != '':
-                    film = Film.objects.get(tmdb_id=film)
-                    if film not in config.shortlist.all():
+            for current_film in old_votes:
+                if current_film not in submitted_films and current_film != '':
+                    current_film = Film.objects.get(tmdb_id=current_film)
+                    if current_film not in config.shortlist.all():
                         return JsonResponse({'success': False})
 
             user.profile.last_vote = datetime.datetime.now()
@@ -172,44 +180,60 @@ def submit_votes(request):
 
 @login_required
 def films(request):
+    """Return a view of all submitted films."""
     return render(request, 'film_management/films.html', {'films': Film.objects.order_by('name')})
 
 
 @login_required
 def search_films(request):
+    """Search the TMDB database for a film."""
     current_string = request.body.decode('utf-8')
 
     if current_string != '':
         request_path = (TMDB_ENDPOINT + 'search/movie?query=' + current_string +
                         '&api_key=' + TMDB_KEY)
         response = requests.get(request_path).json()['results']
-        films = []
+        potential_films = []
 
-        while len(films) < 5:
+        while len(potential_films) < 5:
             try:
-                film = response[len(films)]
+                current_film = response[len(potential_films)]
             except IndexError:
                 break
-            if not Film.objects.filter(tmdb_id=film['id']).exists():
-                if film['release_date'] != '':
-                    if datetime.datetime.now() < datetime.datetime.strptime(film['release_date'], '%Y-%m-%d'):
-                        films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], True])
+            if not Film.objects.filter(tmdb_id=current_film['id']).exists():
+                if current_film['release_date'] != '':
+                    time = datetime.datetime.strptime(current_film['release_date'], '%Y-%m-%d')
+                    if datetime.datetime.now() < time:
+                        potential_films.append(
+                            [current_film['title'] + ' (' +
+                             current_film['release_date'].split('-')[0] + ')', current_film['id'],
+                             True])
                     else:
-                        films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], False])
+                        potential_films.append(
+                            [current_film['title'] + ' (' +
+                             current_film['release_date'].split('-')[0] + ')', current_film['id'],
+                             False])
                 else:
-                    films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], False])
+                    potential_films.append(
+                        [current_film['title'] + ' (' +
+                         current_film['release_date'].split('-')[0] + ')', current_film['id'],
+                         False])
             else:
-                films.append([film['title'] + ' (' + film['release_date'].split('-')[0] + ')', film['id'], True])
+                potential_films.append([
+                    current_film['title'] + ' (' +
+                    current_film['release_date'].split('-')[0] + ')', current_film['id'],
+                    True])
 
-        return JsonResponse({'films': films})
+        return JsonResponse({'films': potential_films})
     return JsonResponse({'success': False})
 
 
 @user_passes_test(lambda u: u.is_superuser)
 def control_panel(request):
+    """Unimplemented filmnight control panel."""
     genres = []
-    for film in Film.objects.all():
-        for genre in film.genres:
+    for current_film in Film.objects.all():
+        for genre in current_film.genres:
             if genre not in genres and genre.strip() != '':
                 genres.append(genre)
     context = {'genres': genres}
