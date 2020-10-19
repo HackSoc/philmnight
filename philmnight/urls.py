@@ -30,7 +30,8 @@ urlpatterns = [
     path('dashboard/', fm_views.dashboard),
     path('films/', fm_views.films),
     path('films/<str:tmdb_id>', fm_views.film),
-    path('logout/', views.logout_view)
+    path('logout/', views.logout_view),
+    path('login/', views.login_view, name='login')
 ]
 
 if settings.DEBUG:

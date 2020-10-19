@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}">
+    </head>
+    <body>
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <input type="text" name="username">
+            <input type="password" name="password">
+            <input type="submit">
+        </form>
+    </body>
+</html>

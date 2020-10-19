@@ -1,8 +1,10 @@
 """Core philmnight views."""
 from django.conf import settings
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 
 
 def index(request):
@@ -20,3 +22,18 @@ def logout_view(request):
 def config(request):
     """Page to configure Philmnight."""
     return render(request, 'config.html')
+
+
+def login_view(request):
+    """Login the given user with the provided credentials."""
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        user = User.objects.filter(username=username)
+        if user.exists():
+            user = user[0]
+            password = request.POST.get('password')
+
+            if user.check_password(password):
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                return HttpResponseRedirect('/dashboard')
+    return render(request, 'login.html')
