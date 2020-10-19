@@ -23,6 +23,7 @@
                     <a href="/dashboard">Welcome back {{ user.first_name }} {{ user.last_name }}</a>
                 {% else %}
                     <a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with a UoY email</a>
+                    <p>Alumni members should poke @dob9601 on Slack for access until a better system is put in place</p>
                 {% endif %}
             </div>
         </div>
