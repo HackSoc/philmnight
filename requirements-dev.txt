@@ -1,0 +1,3 @@
+django-stubs==1.7.0
+pylint_django==2.1.0
+pylint_quotes==0.2.1
