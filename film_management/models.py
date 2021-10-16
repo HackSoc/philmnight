@@ -106,6 +106,7 @@ class FilmConfig(models.Model):
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
+    odd_weeks = models.BooleanField(default=False)
     stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')
 
     def __str__(self):

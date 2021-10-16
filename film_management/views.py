@@ -21,7 +21,7 @@ FILM_TIMEOUT = 10
 def get_phase():
     """Return the current phase of voting."""
     iso_date = timezone.now().isocalendar()
-    if iso_date[1] % 2 == 0 and iso_date[2] == 5:
+    if iso_date[1] % 2 == int(get_config().odd_weeks) and iso_date[2] == 5:
         if timezone.now().hour >= 17:
             return 'filmnight'
         return 'voting'
