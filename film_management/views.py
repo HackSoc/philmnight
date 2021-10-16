@@ -2,11 +2,11 @@
 import ast
 import datetime
 import random
-from typing import Optional
+from typing import Optional, cast
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
+from core.models import User
 from django.db.utils import IntegrityError, OperationalError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.http.request import HttpRequest
@@ -49,7 +49,7 @@ def get_config() -> Optional[FilmConfig]:
 def reset_votes() -> None:
     """Reset all votes for every film to 0."""
     for user in User.objects.all():
-        user.profile.current_votes = ''
+        user.current_votes = ''
         user.save()
 
 
@@ -57,6 +57,7 @@ def reset_votes() -> None:
 def dashboard(request: HttpRequest) -> HttpResponse:
     """View for dashboard - split in 2 at later date."""
     film_config = get_config()
+    user: User = cast(User, request.user)
     assert film_config is not None
     phase = get_phase()
 
@@ -89,7 +90,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
             film_config.save()
 
-        current_votes = [str(i) for i in request.user.profile.current_votes.split(',')]  # FIXME: Ditch Profile class to fix
+        current_votes = [str(i) for i in user.current_votes.split(',')]  # FIXME: Ditch Profile class to fix
         if current_votes == ['']:
             current_votes = []
 
@@ -103,7 +104,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def submit_film(request: HttpRequest, tmdb_id) -> HttpResponse:
+def submit_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
     """Submit the provided film ID to the filmnight database."""
     try:
         last_submission = Film.objects.filter(
@@ -151,14 +152,14 @@ def submit_votes(request: HttpRequest) -> HttpResponse:
     if get_phase() != 'voting':
         return JsonResponse({'success': False})
 
-    user = request.user
+    user: User = cast(User, request.user)
 
     config = get_config()
     assert config is not None
 
     # Clear votes from previous weeks
-    if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
-        user.profile.current_votes = ''
+    if user.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
+        user.current_votes = ''
         user.save()
 
     try:
@@ -166,7 +167,7 @@ def submit_votes(request: HttpRequest) -> HttpResponse:
     except ValueError:
         return JsonResponse({'success': False})
 
-    old_votes = user.profile.current_votes.split(',')
+    old_votes = user.current_votes.split(',')
 
     for current_film in submitted_films:
         if current_film not in old_votes and current_film != '':
@@ -180,9 +181,8 @@ def submit_votes(request: HttpRequest) -> HttpResponse:
             if current_film not in config.shortlist.all():
                 return JsonResponse({'success': False})
 
-    user.profile.last_vote = datetime.datetime.now()
-    user.profile.current_votes = ','.join(submitted_films)
-    print(user.profile.current_votes)
+    user.last_vote = datetime.datetime.now()
+    user.current_votes = ','.join(submitted_films)
     user.save()
 
     return JsonResponse({'success': True})
