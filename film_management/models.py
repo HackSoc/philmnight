@@ -7,9 +7,7 @@ from PIL import Image
 
 from django.db import models
 from django.db.utils import IntegrityError
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from core.models import User
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
@@ -138,40 +136,3 @@ class FilmConfig(models.Model):
         self.logo = 'logo/logo.png'
 
         super(FilmConfig, self).save(*args, **kwargs)
-
-
-# FIXME: Switch to custom user class and ditch this class
-class Profile(models.Model):
-    """Model to extend the user model."""
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    current_votes = models.TextField(blank=True, default='')
-    last_vote = models.DateTimeField(default=datetime.datetime.min)
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        """Override default save method in order to clean up votes."""
-        current_votes = self.current_votes.split(',')
-        for item in current_votes:
-            if item == '':
-                current_votes.remove(item)
-
-        self.current_votes = ','.join(current_votes)
-        super(Profile, self).save(*args, **kwargs)
-
-
-# FIXME: Switch to custom user class and ditch this method
-@receiver(post_save, sender=User)
-def create_user_profile(_, instance, created, **_) -> None:  # type: ignore
-    """Create profile when user created."""
-    if created:
-        Profile.objects.create(user=instance)
-
-
-# FIXME: Switch to custom user class and ditch this method
-@receiver(post_save, sender=User)
-def save_user_profile(_, instance, **_) -> None:  # type: ignore
-    """Save profile when user saved."""
-    try:
-        instance.profile.save()
-    except AttributeError:
-        Profile.objects.create(user=instance)
