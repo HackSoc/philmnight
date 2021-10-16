@@ -26,13 +26,22 @@ class Film(models.Model):
     watched = models.BooleanField(default=False)
     _genres = models.TextField(default='', null=True)
 
+    poster_path = models.CharField(default='', max_length=100, null=True)
+    backdrop_path = models.CharField(default='', max_length=100, null=True)
+
+    submitting_user = models.ForeignKey(User, blank=True, null=True,
+                                        on_delete=models.CASCADE)
+
+    date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
+    release_date = models.DateTimeField(blank=True, auto_now_add=True)
+
     @property
-    def genres(self):
+    def genres(self) -> list[str]:
         """Return film genres as a list."""
         return self._genres.split(',')
 
     @property
-    def votes(self):
+    def votes(self) -> int:
         """Return number of voters."""
         users = User.objects.all()
         vote_count = 0
@@ -43,7 +52,7 @@ class Film(models.Model):
         return vote_count
 
     @property
-    def voters(self):
+    def voters(self) -> list[User]:
         """Return list containing usernames of voters."""
         users = User.objects.all()
         voters_list = []
@@ -53,21 +62,12 @@ class Film(models.Model):
                 voters_list.append(user.first_name + user.last_name)
         return voters_list
 
-    poster_path = models.CharField(default='', max_length=100, null=True)
-    backdrop_path = models.CharField(default='', max_length=100, null=True)
-
-    submitting_user = models.ForeignKey(User, blank=True, null=True,
-                                        on_delete=models.CASCADE)
-
-    date_submitted = models.DateTimeField(auto_now_add=True, blank=True)
-    release_date = models.DateTimeField(blank=True, auto_now_add=True)
-
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string representation of the model."""
         return self.name
 
     # pylint: disable=signature-differs
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         """
         Override save argument of film model.
 
@@ -76,8 +76,6 @@ class Film(models.Model):
         """
         request_path = (TMDB_ENDPOINT + 'movie/' + str(self.tmdb_id) + '?api_key=' + TMDB_KEY)
         film_info = requests.get(request_path).json()
-
-        print(request_path)
 
         self.score = film_info.get('vote_average', -1)
         self.name = film_info.get('title', 'Unknown')
@@ -109,18 +107,19 @@ class FilmConfig(models.Model):
     odd_weeks = models.BooleanField(default=False)
     stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return string representation of film config."""
         return self.name
 
     # pylint: disable=signature-differs
-    def clean(self, *args, **kwargs):
+    def clean(self, *args, **kwargs) -> None:
         """Override clean function so shortlist can't be overpopulated."""
         if self.shortlist.count() > self.shortlist_length:
             raise ValueError('Shortlist length exceeds max')
+        super().clean()
 
     # pylint: disable=signature-differs
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         """Override save method of config to automatically resize images."""
         if FilmConfig.objects.filter(id=1).exists() and self.id != 1:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
@@ -144,7 +143,7 @@ class Profile(models.Model):
     current_votes = models.TextField(blank=True, default='')
     last_vote = models.DateTimeField(default=datetime.datetime.min)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         """Override default save method in order to clean up votes."""
         current_votes = self.current_votes.split(',')
         for item in current_votes:
@@ -156,14 +155,14 @@ class Profile(models.Model):
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_user_profile(sender, instance, created, **kwargs) -> None:
     """Create profile when user created."""
     if created:
         Profile.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
+def save_user_profile(sender, instance, **kwargs) -> None:
     """Save profile when user saved."""
     try:
         instance.profile.save()

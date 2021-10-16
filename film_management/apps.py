@@ -1,3 +1,5 @@
+"""Register the FilmManagementConfig with Django."""
+
 from django.apps import AppConfig
 
 
