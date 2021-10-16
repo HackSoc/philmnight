@@ -99,8 +99,11 @@ class FilmConfig(models.Model):
     """Dynamic settings regarding how the shortlist works."""
 
     name = models.CharField(max_length=80, default='Philmnight')
+
+    logo: models.ImageField  # FIXME: Temporary fix until move away from storing icon in DB
     logo = models.ImageField(upload_to='config/', default='logo/default.png')
     logo_favicon = models.ImageField(upload_to='logo/', blank=True, null=True)
+
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
