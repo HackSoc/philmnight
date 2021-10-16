@@ -1,34 +1,42 @@
 """Views for film management."""
-import random
 import ast
 import datetime
-import requests
+import random
+from typing import Optional
 
-from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.db.utils import IntegrityError, OperationalError
+from django.http import HttpResponseRedirect, JsonResponse
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.utils import timezone
+import requests
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
+
 from .models import Film, FilmConfig
 
 FILM_TIMEOUT = 10
 
 
-def get_phase():
+def get_phase() -> str:
     """Return the current phase of voting."""
     iso_date = timezone.now().isocalendar()
-    if iso_date[1] % 2 == int(get_config().odd_weeks) and iso_date[2] == 5:
+
+    config = get_config()
+    assert config is not None
+
+    if iso_date[1] % 2 == int(config.odd_weeks) and iso_date[2] == 5:
         if timezone.now().hour >= 17:
             return 'filmnight'
         return 'voting'
     return 'submissions'
 
 
-def get_config():
+def get_config() -> Optional[FilmConfig]:
     """Return the film config. If it doesn't exist, create it."""
     try:
         return FilmConfig.objects.all()[0]
@@ -38,7 +46,7 @@ def get_config():
         print('Error supressed to allow for migrations:\nError:'+str(e))
 
 
-def reset_votes():
+def reset_votes() -> None:
     """Reset all votes for every film to 0."""
     for user in User.objects.all():
         user.profile.current_votes = ''
@@ -46,9 +54,10 @@ def reset_votes():
 
 
 @login_required
-def dashboard(request):
+def dashboard(request: HttpRequest) -> HttpResponse:
     """View for dashboard - split in 2 at later date."""
     film_config = get_config()
+    assert film_config is not None
     phase = get_phase()
 
     if phase == 'filmnight':
@@ -71,7 +80,7 @@ def dashboard(request):
 
             for _ in range(film_config.shortlist_length):
                 try:
-                    chosen_film = random.choice(available_films)
+                    chosen_film = random.choice(list(available_films))
                 except IndexError:
                     break
 
@@ -80,7 +89,7 @@ def dashboard(request):
 
             film_config.save()
 
-        current_votes = [str(i) for i in request.user.profile.current_votes.split(',')]
+        current_votes = [str(i) for i in request.user.profile.current_votes.split(',')]  # FIXME: Ditch Profile class to fix
         if current_votes == ['']:
             current_votes = []
 
@@ -94,7 +103,7 @@ def dashboard(request):
 
 
 @login_required
-def submit_film(request, tmdb_id):
+def submit_film(request: HttpRequest, tmdb_id) -> HttpResponse:
     """Submit the provided film ID to the filmnight database."""
     try:
         last_submission = Film.objects.filter(
@@ -122,14 +131,14 @@ def submit_film(request, tmdb_id):
 
 
 @login_required
-def film(request, tmdb_id):
+def film(request: HttpRequest, tmdb_id: str):
     """Render information about a chosen film."""
     chosen_film = Film.objects.get(tmdb_id=tmdb_id)
     return render(request, 'film_management/film.html', {'film': chosen_film})
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def delete_film(request, tmdb_id):
+def delete_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
     """Delete a given film. Superusers only."""
     chosen_film = Film.objects.get(tmdb_id=tmdb_id)
     chosen_film.delete()
@@ -137,55 +146,56 @@ def delete_film(request, tmdb_id):
 
 
 @login_required
-def submit_votes(request):
+def submit_votes(request: HttpRequest) -> HttpResponse:
     """Submit a vote on a film."""
-    if get_phase() == 'voting':
-        user = request.user
+    if get_phase() != 'voting':
+        return JsonResponse({'success': False})
 
-        config = get_config()
+    user = request.user
 
-        # Clear votes from previous weeks
-        if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
-            user.profile.current_votes = ''
-            user.save()
+    config = get_config()
+    assert config is not None
 
-        success = True
-        try:
-            submitted_films = ast.literal_eval(request.body.decode('utf-8'))
-        except ValueError:
-            success = False
+    # Clear votes from previous weeks
+    if user.profile.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
+        user.profile.current_votes = ''
+        user.save()
 
-        if success:
-            old_votes = user.profile.current_votes.split(',')
+    try:
+        submitted_films: list = ast.literal_eval(request.body.decode('utf-8'))
+    except ValueError:
+        return JsonResponse({'success': False})
 
-            for current_film in submitted_films:
-                if current_film not in old_votes and current_film != '':
-                    current_film = Film.objects.get(tmdb_id=current_film)
-                    if current_film not in config.shortlist.all():
-                        return JsonResponse({'success': False})
+    old_votes = user.profile.current_votes.split(',')
 
-            for current_film in old_votes:
-                if current_film not in submitted_films and current_film != '':
-                    current_film = Film.objects.get(tmdb_id=current_film)
-                    if current_film not in config.shortlist.all():
-                        return JsonResponse({'success': False})
+    for current_film in submitted_films:
+        if current_film not in old_votes and current_film != '':
+            current_film = Film.objects.get(tmdb_id=current_film)
+            if current_film not in config.shortlist.all():
+                return JsonResponse({'success': False})
 
-            user.profile.last_vote = datetime.datetime.now()
-            user.profile.current_votes = ','.join(submitted_films)
-            print(user.profile.current_votes)
-            user.save()
+    for current_film in old_votes:
+        if current_film not in submitted_films and current_film != '':
+            current_film = Film.objects.get(tmdb_id=current_film)
+            if current_film not in config.shortlist.all():
+                return JsonResponse({'success': False})
 
-    return JsonResponse({'success': success})
+    user.profile.last_vote = datetime.datetime.now()
+    user.profile.current_votes = ','.join(submitted_films)
+    print(user.profile.current_votes)
+    user.save()
+
+    return JsonResponse({'success': True})
 
 
 @login_required
-def films(request):
+def films(request: HttpRequest) -> HttpResponse:
     """Return a view of all submitted films."""
     return render(request, 'film_management/films.html', {'films': Film.objects.order_by('name')})
 
 
 @login_required
-def search_films(request):
+def search_films(request: HttpRequest) -> HttpResponse:
     """Search the TMDB database for a film."""
     current_string = request.body.decode('utf-8')
 
@@ -229,7 +239,7 @@ def search_films(request):
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def control_panel(request):
+def control_panel(request: HttpRequest):
     """Unimplemented filmnight control panel."""
     genres = []
     for current_film in Film.objects.all():

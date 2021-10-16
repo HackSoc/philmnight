@@ -1,0 +1,36 @@
+name: Pyright
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+
+jobs:
+  check_types:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Python 3.9
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.9
+
+    - name: Setup NodeJS for Pyright
+      uses: actions/setup-node@v1
+      with:
+        node-version: "12"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        npm install -g pyright
+    - name: Analysing the code with pyright
+      run: |
+        pyright . --lib

@@ -1,8 +1,6 @@
-django_heroku
-requests
-Django
-python-dotenv
-gunicorn
-requests_oauthlib
-social-auth-app-django
-Pillow
+Django==3.2
+requests==2.25.1
+Pillow==8.4.0
+python-dotenv==0.19.1
+gunicorn==20.1.0
+social-auth-app-django==5.0.0
