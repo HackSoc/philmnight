@@ -1,20 +1,22 @@
 """Views for film management."""
-import random
 import ast
 import datetime
+import random
 from typing import Optional
-from django.http.response import HttpResponse
-import requests
 
-from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.db.utils import IntegrityError, OperationalError
+from django.http import HttpResponseRedirect, JsonResponse
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.utils import timezone
+import requests
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
+
 from .models import Film, FilmConfig
 
 FILM_TIMEOUT = 10
@@ -52,7 +54,7 @@ def reset_votes() -> None:
 
 
 @login_required
-def dashboard(request) -> HttpResponse:
+def dashboard(request: HttpRequest) -> HttpResponse:
     """View for dashboard - split in 2 at later date."""
     film_config = get_config()
     assert film_config is not None
@@ -87,7 +89,7 @@ def dashboard(request) -> HttpResponse:
 
             film_config.save()
 
-        current_votes = [str(i) for i in request.user.profile.current_votes.split(',')]
+        current_votes = [str(i) for i in request.user.profile.current_votes.split(',')]  # FIXME: Ditch Profile class to fix
         if current_votes == ['']:
             current_votes = []
 
@@ -101,7 +103,7 @@ def dashboard(request) -> HttpResponse:
 
 
 @login_required
-def submit_film(request, tmdb_id):
+def submit_film(request: HttpRequest, tmdb_id) -> HttpResponse:
     """Submit the provided film ID to the filmnight database."""
     try:
         last_submission = Film.objects.filter(
@@ -129,14 +131,14 @@ def submit_film(request, tmdb_id):
 
 
 @login_required
-def film(request, tmdb_id):
+def film(request: HttpRequest, tmdb_id: str):
     """Render information about a chosen film."""
     chosen_film = Film.objects.get(tmdb_id=tmdb_id)
     return render(request, 'film_management/film.html', {'film': chosen_film})
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def delete_film(request, tmdb_id):
+def delete_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
     """Delete a given film. Superusers only."""
     chosen_film = Film.objects.get(tmdb_id=tmdb_id)
     chosen_film.delete()
@@ -144,7 +146,7 @@ def delete_film(request, tmdb_id):
 
 
 @login_required
-def submit_votes(request):
+def submit_votes(request: HttpRequest) -> HttpResponse:
     """Submit a vote on a film."""
     if get_phase() != 'voting':
         return JsonResponse({'success': False})
@@ -187,13 +189,13 @@ def submit_votes(request):
 
 
 @login_required
-def films(request) -> HttpResponse:
+def films(request: HttpRequest) -> HttpResponse:
     """Return a view of all submitted films."""
     return render(request, 'film_management/films.html', {'films': Film.objects.order_by('name')})
 
 
 @login_required
-def search_films(request) -> HttpResponse:
+def search_films(request: HttpRequest) -> HttpResponse:
     """Search the TMDB database for a film."""
     current_string = request.body.decode('utf-8')
 
@@ -237,7 +239,7 @@ def search_films(request) -> HttpResponse:
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def control_panel(request):
+def control_panel(request: HttpRequest):
     """Unimplemented filmnight control panel."""
     genres = []
     for current_film in Film.objects.all():

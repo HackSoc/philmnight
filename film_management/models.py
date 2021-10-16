@@ -1,6 +1,7 @@
 """Models relating to film management."""
 
 import datetime
+from typing import Any
 import requests
 from PIL import Image
 
@@ -67,7 +68,7 @@ class Film(models.Model):
         return self.name
 
     # pylint: disable=signature-differs
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         """
         Override save argument of film model.
 
@@ -115,14 +116,14 @@ class FilmConfig(models.Model):
         return self.name
 
     # pylint: disable=signature-differs
-    def clean(self, *args, **kwargs) -> None:
+    def clean(self, *args: Any, **kwargs: Any) -> None:
         """Override clean function so shortlist can't be overpopulated."""
         if self.shortlist.count() > self.shortlist_length:
             raise ValueError('Shortlist length exceeds max')
-        super().clean()
+        super().clean(*args, **kwargs)
 
     # pylint: disable=signature-differs
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         """Override save method of config to automatically resize images."""
         if FilmConfig.objects.filter(id=1).exists() and self.id != 1:
             raise IntegrityError('Only one instance of FilmConfig may exist in the database')
@@ -139,6 +140,7 @@ class FilmConfig(models.Model):
         super(FilmConfig, self).save(*args, **kwargs)
 
 
+# FIXME: Switch to custom user class and ditch this class
 class Profile(models.Model):
     """Model to extend the user model."""
 
@@ -146,7 +148,7 @@ class Profile(models.Model):
     current_votes = models.TextField(blank=True, default='')
     last_vote = models.DateTimeField(default=datetime.datetime.min)
 
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         """Override default save method in order to clean up votes."""
         current_votes = self.current_votes.split(',')
         for item in current_votes:
@@ -157,15 +159,17 @@ class Profile(models.Model):
         super(Profile, self).save(*args, **kwargs)
 
 
+# FIXME: Switch to custom user class and ditch this method
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs) -> None:
+def create_user_profile(_, instance, created, **_) -> None:  # type: ignore
     """Create profile when user created."""
     if created:
         Profile.objects.create(user=instance)
 
 
+# FIXME: Switch to custom user class and ditch this method
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs) -> None:
+def save_user_profile(_, instance, **_) -> None:  # type: ignore
     """Save profile when user saved."""
     try:
         instance.profile.save()
