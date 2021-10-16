@@ -1,0 +1,10 @@
+{
+    "strict": [],
+    "reportOptionalCall": true,
+    "reportOptionalSubscript": true,
+    "reportOptionalMemberAccess": true,
+    "reportOptionalIterable": true,
+    "reportOptionalContextManager": true,
+    "reportOptionalOperand": true,
+    "reportUnknownParameterType": true
+}
