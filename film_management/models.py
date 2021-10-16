@@ -161,7 +161,7 @@ class Profile(models.Model):
 
 # FIXME: Switch to custom user class and ditch this method
 @receiver(post_save, sender=User)
-def create_user_profile(_, instance, created, **_) -> None:  # type: ignore
+def create_user_profile(_sender, instance, created, **_) -> None:  # type: ignore
     """Create profile when user created."""
     if created:
         Profile.objects.create(user=instance)
@@ -169,7 +169,7 @@ def create_user_profile(_, instance, created, **_) -> None:  # type: ignore
 
 # FIXME: Switch to custom user class and ditch this method
 @receiver(post_save, sender=User)
-def save_user_profile(_, instance, **_) -> None:  # type: ignore
+def save_user_profile(_sender, instance, **_) -> None:  # type: ignore
     """Save profile when user saved."""
     try:
         instance.profile.save()
