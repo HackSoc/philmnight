@@ -117,21 +117,6 @@ class FilmConfig(models.Model):
         """Return string representation of film config."""
         return self.name
 
-    def clean(self):
-        """Override clean function so shortlist can't be overpopulated."""
-        cleaned_data = super().clean()
-        cleaned_data.get # TODO: WIP
-        errors = {}
-
-        if self.voting_length > self.filmnight_timedelta:
-            errors['voting_period_length'] = ValidationError('Voting period length should be less than ')
-
-        if self.shortlist.count() > self.shortlist_length:
-            errors['shortlist'] = ValidationError('Shortlist length exceeds max')
-
-        if errors:
-            raise ValidationError(errors)
-
     # pylint: disable=signature-differs
     def save(self, *args: Any, **kwargs: Any) -> None:
         """Override save method of config to automatically resize images."""
