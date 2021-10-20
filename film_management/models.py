@@ -2,6 +2,7 @@
 
 import datetime
 from typing import Any
+from django.core.exceptions import ValidationError
 import requests
 from PIL import Image
 
@@ -106,19 +107,30 @@ class FilmConfig(models.Model):
     shortlist = models.ManyToManyField(Film)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
-    odd_weeks = models.BooleanField(default=False)
     stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')
+
+    next_filmnight = models.DateTimeField()
+    filmnight_timedelta = models.DurationField()
+    voting_length = models.DurationField()
 
     def __str__(self) -> str:
         """Return string representation of film config."""
         return self.name
 
-    # pylint: disable=signature-differs
-    def clean(self, *args: Any, **kwargs: Any) -> None:
+    def clean(self):
         """Override clean function so shortlist can't be overpopulated."""
+        cleaned_data = super().clean()
+        cleaned_data.get # TODO: WIP
+        errors = {}
+
+        if self.voting_length > self.filmnight_timedelta:
+            errors['voting_period_length'] = ValidationError('Voting period length should be less than ')
+
         if self.shortlist.count() > self.shortlist_length:
-            raise ValueError('Shortlist length exceeds max')
-        super().clean(*args, **kwargs)
+            errors['shortlist'] = ValidationError('Shortlist length exceeds max')
+
+        if errors:
+            raise ValidationError(errors)
 
     # pylint: disable=signature-differs
     def save(self, *args: Any, **kwargs: Any) -> None:

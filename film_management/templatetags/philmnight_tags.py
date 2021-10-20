@@ -9,7 +9,7 @@ FILM_CONFIG = get_config()
 
 
 @register.simple_tag
-def philmnight_name():
+def philmnight_name() -> str:
     """Return the name of the philmnight app."""
     assert FILM_CONFIG is not None
     return FILM_CONFIG.name

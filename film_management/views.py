@@ -1,12 +1,12 @@
 """Views for film management."""
 import ast
 import datetime
+from enum import Enum
 import random
 from typing import Optional, cast
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from core.models import User
 from django.db.utils import IntegrityError, OperationalError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.http.request import HttpRequest
@@ -15,6 +15,7 @@ from django.shortcuts import render
 from django.utils import timezone
 import requests
 
+from core.models import User
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
 from .models import Film, FilmConfig
@@ -22,18 +23,31 @@ from .models import Film, FilmConfig
 FILM_TIMEOUT = 10
 
 
-def get_phase() -> str:
+class FilmnightPhase(Enum):
+    FILMNIGHT = 0
+    VOTING = 1
+    SUBMISSIONS = 2
+
+
+def get_phase() -> FilmnightPhase:
     """Return the current phase of voting."""
-    iso_date = timezone.now().isocalendar()
+    current_time = timezone.now()
 
     config = get_config()
     assert config is not None
 
-    if iso_date[1] % 2 == int(config.odd_weeks) and iso_date[2] == 5:
-        if timezone.now().hour >= 17:
-            return 'filmnight'
-        return 'voting'
-    return 'submissions'
+    if current_time > config.next_filmnight:
+        if current_time > config.next_filmnight + datetime.timedelta(days=1):
+            config.next_filmnight += config.filmnight_timedelta
+            config.save()
+            return get_phase()
+
+        return FilmnightPhase.FILMNIGHT
+    
+    if current_time > config.next_filmnight - config.voting_period_length:
+        return FilmnightPhase.VOTING
+
+    return FilmnightPhase.SUBMISSIONS
 
 
 def get_config() -> Optional[FilmConfig]:
@@ -44,6 +58,7 @@ def get_config() -> Optional[FilmConfig]:
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
     except OperationalError as e:
         print('Error supressed to allow for migrations:\nError:'+str(e))
+        return
 
 
 def reset_votes() -> None:

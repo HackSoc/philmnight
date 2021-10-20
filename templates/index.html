@@ -12,10 +12,10 @@
     <body>
         <div id="content">
             <div id="header-card">
-                {% philmnight_logo %}
+                <img id="logo" src="{% static 'logo.png' %}">
                 <div id="header-text">
                     <h1>{% philmnight_name %}</h1>
-                    <h2>Film Night Portal</h2>
+                    <h2>Filmnights made easy</h2>
                 </div>
             </div>
             <div id="auth-links">
@@ -23,7 +23,6 @@
                     <a href="/dashboard">Welcome back {{ user.first_name }} {{ user.last_name }}</a>
                 {% else %}
                     <a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with a UoY email</a>
-                    <p>Alumni members should poke @dob9601 on Slack for access until a better system is put in place</p>
                 {% endif %}
             </div>
         </div>
