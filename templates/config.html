@@ -12,7 +12,9 @@
     <body>
         <h1>This page allows for configuration and styling of Philmnight to match your organisations branding</h1>
         <form method="POST">
+            {% csrf_token %}
             {{ config_form }}
+            <input type="submit">
         </form>
         <script>
             flatpickr('#id_next_filmnight', {

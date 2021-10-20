@@ -21,7 +21,7 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.index),
-    path('config/', views.config, name='config'),
+    path('config/', views.ConfigView.as_view(), name='config'),
     path('logout/', views.logout_view),
     path('login/', views.login_view, name='login')
 ]

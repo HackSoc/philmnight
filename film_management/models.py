@@ -104,7 +104,7 @@ class FilmConfig(models.Model):
     logo = models.ImageField(upload_to='config/', default='logo/default.png')
     logo_favicon = models.ImageField(upload_to='logo/', blank=True, null=True)
 
-    shortlist = models.ManyToManyField(Film)
+    shortlist = models.ManyToManyField(Film, blank=True)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
     stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')

@@ -1,13 +1,15 @@
 """Core philmnight views."""
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.urls import reverse
 
+from core.abstract_views import SuperuserView
 from film_management.forms import FilmConfigForm
 from film_management.models import FilmConfig
 
@@ -26,13 +28,24 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     return render(request, 'index.html', {})
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def config(request: HttpRequest) -> HttpResponse:
-    """Page to configure Philmnight."""
-    context = {
-        'config_form': FilmConfigForm(instance=FilmConfig.objects.get(pk=1))
-    }
-    return render(request, 'config.html', context)
+class ConfigView(SuperuserView):
+    template_name = 'config.html'
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        context = {
+            'config_form': FilmConfigForm(instance=FilmConfig.objects.get(pk=1))
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        config_form = FilmConfigForm(request.POST, request.FILES)
+
+        if config_form.is_valid():
+            messages.add_message(request, messages.SUCCESS, 'Config updated successfully')
+            config_form.save()
+            return HttpResponseRedirect(reverse('config'))
+
+        return render(request, self.template_name, {'config_form': config_form})
 
 
 def login_view(request: HttpRequest) -> HttpResponse:
