@@ -44,7 +44,7 @@ def get_phase() -> FilmnightPhase:
 
         return FilmnightPhase.FILMNIGHT
     
-    if current_time > config.next_filmnight - config.voting_period_length:
+    if current_time > config.next_filmnight - config.voting_length:
         return FilmnightPhase.VOTING
 
     return FilmnightPhase.SUBMISSIONS
