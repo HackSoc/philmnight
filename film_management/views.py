@@ -12,7 +12,6 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import render
-from django.utils import timezone
 import requests
 
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
@@ -20,20 +19,6 @@ from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 from .models import Film, FilmConfig
 
 FILM_TIMEOUT = 10
-
-
-def get_phase() -> str:
-    """Return the current phase of voting."""
-    iso_date = timezone.now().isocalendar()
-
-    config = get_config()
-    assert config is not None
-
-    if iso_date[1] % 2 == int(config.odd_weeks) and iso_date[2] == 5:
-        if timezone.now().hour >= 17:
-            return 'filmnight'
-        return 'voting'
-    return 'submissions'
 
 
 def get_config() -> Optional[FilmConfig]:
@@ -59,7 +44,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     film_config = get_config()
     user: User = cast(User, request.user)
     assert film_config is not None
-    phase = get_phase()
+    phase = film_config.get_phase()
 
     if phase == 'filmnight':
         top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
@@ -149,13 +134,13 @@ def delete_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
 @login_required
 def submit_votes(request: HttpRequest) -> HttpResponse:
     """Submit a vote on a film."""
-    if get_phase() != 'voting':
+    config = get_config()
+    assert config is not None
+
+    if config.get_phase() != 'voting':
         return JsonResponse({'success': False})
 
     user: User = cast(User, request.user)
-
-    config = get_config()
-    assert config is not None
 
     # Clear votes from previous weeks
     if user.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
