@@ -18,6 +18,8 @@ from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 class Film(models.Model):
     """Stores information regarding an individual film."""
 
+    # TODO: Film for associated filmnight.
+
     tmdb_id = models.IntegerField(default=1, null=True, unique=True)
 
     score = models.DecimalField(default=-1, null=True, decimal_places=1, max_digits=3)

@@ -16,7 +16,7 @@ import requests
 from core.models import User
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
-from .models import Film, FilmConfig
+from film_management.models import Film, FilmConfig
 
 FILM_TIMEOUT = 10
 
@@ -47,12 +47,12 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     assert film_config is not None
     phase = film_config.get_phase()
 
-    if phase == 'filmnight':
+    if phase == FilmConfig.Phase.FILMNIGHT:
         top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
 
         return HttpResponseRedirect('/films/' + str(top_film.tmdb_id))
 
-    if phase == 'voting':
+    if phase == FilmConfig.Phase.VOTING:
         if (datetime.datetime.now() - film_config.last_shortlist).days > 7:
             available_films = Film.objects.filter(watched=False)
             film_config.shortlist.clear()
@@ -87,49 +87,6 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
         return render(request, 'film_management/vote.html', context)
     return render(request, 'film_management/submit.html')
-
-
-@login_required
-def submit_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
-    """Submit the provided film ID to the filmnight database."""
-    try:
-        last_submission = Film.objects.filter(
-            submitting_user=request.user
-        ).order_by('-date_submitted')[0]
-        last_submit_delta = (datetime.datetime.now()-last_submission.date_submitted).seconds
-        if last_submit_delta < FILM_TIMEOUT:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                f'You\'re doing that too fast. Try again in {FILM_TIMEOUT-last_submit_delta}'
-                ' seconds'
-            )
-            return HttpResponseRedirect('/dashboard/')
-    except IndexError:
-        pass
-
-    try:
-        Film.objects.create(tmdb_id=tmdb_id, submitting_user=request.user)
-        messages.add_message(request, messages.SUCCESS, 'Successfully added film')
-    except IntegrityError:
-        messages.add_message(request, messages.ERROR, 'Film already exists in database.')
-
-    return HttpResponseRedirect('/dashboard/')
-
-
-@login_required
-def film(request: HttpRequest, tmdb_id: str):
-    """Render information about a chosen film."""
-    chosen_film = Film.objects.get(tmdb_id=tmdb_id)
-    return render(request, 'film_management/film.html', {'film': chosen_film})
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def delete_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
-    """Delete a given film. Superusers only."""
-    chosen_film = Film.objects.get(tmdb_id=tmdb_id)
-    chosen_film.delete()
-    return HttpResponseRedirect('/films/')
 
 
 @login_required
@@ -172,12 +129,6 @@ def submit_votes(request: HttpRequest) -> HttpResponse:
     user.save()
 
     return JsonResponse({'success': True})
-
-
-@login_required
-def films(request: HttpRequest) -> HttpResponse:
-    """Return a view of all submitted films."""
-    return render(request, 'film_management/films.html', {'films': Film.objects.order_by('name')})
 
 
 @login_required

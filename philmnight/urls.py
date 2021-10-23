@@ -17,19 +17,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from film_management import views as fm_views
-
 from . import settings
 
 
 urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
     path('', include('core.urls')),
+    path('filmnights/', include('film_management.urls')),
     path('admin/', admin.site.urls),
-    path('film_management/', include('film_management.urls')),
-    path('dashboard/', fm_views.dashboard),
-    path('films/', fm_views.films),
-    path('films/<str:tmdb_id>', fm_views.film),
 ]
 
 if settings.DEBUG:
