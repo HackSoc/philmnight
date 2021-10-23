@@ -6,7 +6,6 @@ from typing import Optional, cast
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from core.models import User
 from django.db.utils import IntegrityError, OperationalError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.http.request import HttpRequest
@@ -14,6 +13,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 import requests
 
+from core.models import User
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
 from .models import Film, FilmConfig
@@ -29,6 +29,7 @@ def get_config() -> Optional[FilmConfig]:
         return FilmConfig.objects.create(last_shortlist=datetime.datetime(1, 1, 1))
     except OperationalError as e:
         print('Error supressed to allow for migrations:\nError:'+str(e))
+        return
 
 
 def reset_votes() -> None:

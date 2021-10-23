@@ -110,10 +110,9 @@ class FilmConfig(models.Model):
     logo = models.ImageField(upload_to='config/', default='logo/default.png')
     logo_favicon = models.ImageField(upload_to='logo/', blank=True, null=True)
 
-    shortlist = models.ManyToManyField(Film)
+    shortlist = models.ManyToManyField(Film, blank=True)
     shortlist_length = models.IntegerField(default=8)
     last_shortlist = models.DateTimeField()
-    odd_weeks = models.BooleanField(default=False)
     stylesheet = models.FileField(upload_to='config/', default='config/stylesheet.css')
 
     next_filmnight = models.DateTimeField()
@@ -142,13 +141,6 @@ class FilmConfig(models.Model):
     def __str__(self) -> str:
         """Return string representation of film config."""
         return self.name
-
-    # pylint: disable=signature-differs
-    def clean(self, *args: Any, **kwargs: Any) -> None:
-        """Override clean function so shortlist can't be overpopulated."""
-        if self.shortlist.count() > self.shortlist_length:
-            raise ValueError('Shortlist length exceeds max')
-        super().clean(*args, **kwargs)
 
     # pylint: disable=signature-differs
     def save(self, *args: Any, **kwargs: Any) -> None:
