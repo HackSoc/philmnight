@@ -1,15 +1,16 @@
 """Models relating to film management."""
-
+from __future__ import annotations
 import datetime
+from enum import Enum
 from typing import Any
-from django.core.exceptions import ValidationError
-import requests
-from PIL import Image
 
+from PIL import Image
 from django.db import models
 from django.db.utils import IntegrityError
-from core.models import User
+from django.utils import timezone
+import requests
 
+from core.models import User
 from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 
 
@@ -98,6 +99,11 @@ class Film(models.Model):
 class FilmConfig(models.Model):
     """Dynamic settings regarding how the shortlist works."""
 
+    class Phase(Enum):
+        FILMNIGHT = 0
+        VOTING = 1
+        SUBMISSIONS = 2
+
     name = models.CharField(max_length=80, default='Philmnight')
 
     logo: models.ImageField  # FIXME: Temporary fix until move away from storing icon in DB
@@ -112,6 +118,25 @@ class FilmConfig(models.Model):
     next_filmnight = models.DateTimeField()
     filmnight_timedelta = models.DurationField()
     voting_length = models.DurationField()
+
+    def get_phase(self) -> FilmConfig.Phase:
+        """Return the current phase of voting."""
+        current_time = timezone.now()
+
+        if current_time > self.next_filmnight:
+            if current_time > self.next_filmnight + datetime.timedelta(days=1):
+                while current_time > self.next_filmnight + datetime.timedelta(days=1):
+                    self.next_filmnight += self.filmnight_timedelta
+
+                self.save()
+                return self.get_phase()
+
+            return FilmConfig.Phase.FILMNIGHT
+
+        if current_time > self.next_filmnight - self.voting_length:
+            return FilmConfig.Phase.VOTING
+
+        return FilmConfig.Phase.SUBMISSIONS
 
     def __str__(self) -> str:
         """Return string representation of film config."""

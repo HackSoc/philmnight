@@ -1,7 +1,6 @@
 """Views for film management."""
 import ast
 import datetime
-from enum import Enum
 import random
 from typing import Optional, cast
 
@@ -12,7 +11,6 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import render
-from django.utils import timezone
 import requests
 
 from core.models import User
@@ -21,33 +19,6 @@ from philmnight.settings import TMDB_ENDPOINT, TMDB_KEY
 from .models import Film, FilmConfig
 
 FILM_TIMEOUT = 10
-
-
-class FilmnightPhase(Enum):
-    FILMNIGHT = 0
-    VOTING = 1
-    SUBMISSIONS = 2
-
-
-def get_phase() -> FilmnightPhase:
-    """Return the current phase of voting."""
-    current_time = timezone.now()
-
-    config = get_config()
-    assert config is not None
-
-    if current_time > config.next_filmnight:
-        if current_time > config.next_filmnight + datetime.timedelta(days=1):
-            config.next_filmnight += config.filmnight_timedelta
-            config.save()
-            return get_phase()
-
-        return FilmnightPhase.FILMNIGHT
-    
-    if current_time > config.next_filmnight - config.voting_length:
-        return FilmnightPhase.VOTING
-
-    return FilmnightPhase.SUBMISSIONS
 
 
 def get_config() -> Optional[FilmConfig]:
@@ -74,7 +45,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     film_config = get_config()
     user: User = cast(User, request.user)
     assert film_config is not None
-    phase = get_phase()
+    phase = film_config.get_phase()
 
     if phase == 'filmnight':
         top_film = max([[film, film.votes] for film in Film.objects.all()], key=lambda x: x[1])[0]
@@ -164,13 +135,13 @@ def delete_film(request: HttpRequest, tmdb_id: str) -> HttpResponse:
 @login_required
 def submit_votes(request: HttpRequest) -> HttpResponse:
     """Submit a vote on a film."""
-    if get_phase() != 'voting':
+    config = get_config()
+    assert config is not None
+
+    if config.get_phase() != 'voting':
         return JsonResponse({'success': False})
 
     user: User = cast(User, request.user)
-
-    config = get_config()
-    assert config is not None
 
     # Clear votes from previous weeks
     if user.last_vote.isocalendar()[1] < datetime.datetime.now().isocalendar()[1]:
